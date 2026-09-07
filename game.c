@@ -1939,8 +1939,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             if((GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - LastTickV >= maxTickV){
                 LastTickV = jumpcooldown_current;
                 settingSelect++;
-                if(settingSelect > 2){
-                    settingSelect = 0;
+                if(settingSelect > 3){
+                    settingSelect = 1;
                 }
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
@@ -1948,15 +1948,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             if((GetAsyncKeyState(0x41) & 0x8000) && jumpcooldown_current - LastTickV >= maxTickV){
                 LastTickV = jumpcooldown_current;
                 settingSelect--;
-                if(settingSelect < 0){
-                    settingSelect = 2;
+                if(settingSelect < 1){
+                    settingSelect = 3;
                 }
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
             }
             if(GetAsyncKeyState(0x0D) & 0x8000 && jumpcooldown_current - lc_start_button >= maxTickV){
                 lc_start_button = jumpcooldown_current;
-                if(settingSelect == 0){
+                if(settingSelect == 1){
                     GameState = 0;
                 }
                 inputPlay = 1;
@@ -1965,14 +1965,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             }
 
             if(GetAsyncKeyState(0x0D) & 0x8000 && jumpcooldown_current - lc_start_button >= 75){
-                if( settingSelect == 1){
+                if( settingSelect == 2){
                     VolumeAmount -= 0.05;
                     if(VolumeAmount < 0){
                         VolumeAmount = 0;
                     }
                     
                 }
-                else if( settingSelect == 2){
+                else if( settingSelect == 3){
                     VolumeAmount += 0.05;
                     if(VolumeAmount > 1){
                         VolumeAmount = 1;
@@ -2185,13 +2185,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             Draw8x8FlippedX(pixel, SettingNX - 16, 112, Arrow);
             Draw8x8(pixel, SettingNX + 8 + (8*8), 112, Arrow);
             WordToScreen(pixel, my_round((288 - (8*6)) / 2), 96, "Volume");
-            if(settingSelect == 0){
+            if(settingSelect == 1){
                 Draw8x8(pixel, 0, 0, SelectBox);
             }
-            else if(settingSelect == 1){
+            else if(settingSelect == 2){
                 Draw8x8(pixel, SettingNX - 16, 112, SelectBox);
             }
-            else if(settingSelect == 2){
+            else if(settingSelect == 3){
                 Draw8x8(pixel, SettingNX + 8 + (8*8), 112, SelectBox);
             }
             char StrBuffB[5];
