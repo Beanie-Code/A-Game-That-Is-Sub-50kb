@@ -2,7 +2,11 @@
 This is a Game I'm working on that will be sub 50kb
 Read Full File
 
-Penguin Run Made in 2026 During February - September. ;# The reason it took so long to make: I forgot about it, but then I remembered in late august, and mostly finished it.
+Penguin Run Made in 2026 During February - September. 
+########
+Dev Note
+########
+;# The reason it took so long to make: I forgot about it, but then I remembered in late august, and mostly finished it.
 This Game was made using windows.h & mmsystem.h libraries.
 
 #######################################
