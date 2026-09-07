@@ -67,5 +67,6 @@ https://github.com/user-attachments/assets/e0b06421-bec0-426e-8581-2786312d8f3a
 
 
 
-\nLicense & Terms
-\nThis project is free to play, share, and stream. However, commercial use or monetization by third-party corporations is strictly prohibited. See the accompanying `LICENSE.txt` file for full legal details.
+License & Terms
+
+This project is free to play, share, and stream. However, commercial use or monetization by third-party corporations is strictly prohibited. See the accompanying `LICENSE.txt` file for full legal details.
