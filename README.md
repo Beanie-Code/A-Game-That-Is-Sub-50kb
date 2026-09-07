@@ -32,5 +32,11 @@ ALT Download
 However if you don't feel comfortable downloading the exe(Understandable) I gave the source code titled game.c. You can take this source code download via clicking download raw. Then compile the game.
 You can also check the very messy and hard to read code  too. You can even prolly strip the game code and build a Framework off of it by reorganizing.
 
+Footage of the Game
+
+https://github.com/user-attachments/assets/5124a0cd-f45e-462d-b2a2-e339c3e905ab
+
+
+
 License & Terms
 This project is free to play, share, and stream. However, commercial use or monetization by third-party corporations is strictly prohibited. See the accompanying `LICENSE.txt` file for full legal details.
