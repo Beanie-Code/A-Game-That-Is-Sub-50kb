@@ -1,5 +1,5 @@
-# A-Game-That-Is-Sub-50kb
-This is a Game I'm working on that will be sub 50kb
+# A-Game-That-Is-50kb-or-sub-50kb
+This is a Game I'm working on that will be 50kb or sub 50kb
 Read Full File
 
 Penguin Run Made in 2026 During February - September. 
