@@ -29,7 +29,7 @@ After you downloaded the file you find it in download folder then double click.
 Most likely windows will give you a warning saying unknown publisher you can click run anyways or if its not there click more info Then run anyways.
 
 ALT Download
-However if you don't feel comfortable downloading the exe(Understandable) I gave the source code titled game.c. You can take this source code download via clicking raw. Then compile the game.
+However if you don't feel comfortable downloading the exe(Understandable) I gave the source code titled game.c. You can take this source code download via clicking download raw. Then compile the game.
 You can also check the very messy and hard to read code  too. You can even prolly strip the game code and build a Framework off of it by reorganizing.
 
 License & Terms
