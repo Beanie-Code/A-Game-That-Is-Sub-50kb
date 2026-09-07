@@ -24,7 +24,8 @@ How To Play!
 #####################################
 
 
-Controls.
+
+Controls.################
 
 AD to move left & right.
 
@@ -43,7 +44,8 @@ Graphics Are All 8x8 images excluding a few, technically one is 8x16 and one 16x
 Language Used C
 
 
-Downloading
+
+Downloading#############
 
 To Download, you'll need to download the raw file of PenguinRun2026.exe. 
 
@@ -51,7 +53,8 @@ After you downloaded the file, you'll find it in download folder, then double cl
 
 Most likely windows will give you a warning saying, unknown publisher, you can click run anyways or, if its not there click more info Then run anyways.
 
-ALT Download
+
+ALT Download#########
 
 However, if you don't feel comfortable downloading the exe(Understandable), I gave the source code titled game.c. You can take this source code download via clicking download raw. Then compile the game.
 
