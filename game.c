@@ -2271,7 +2271,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
  
             Draw8x8(pixel, TitleNameX - 10, ArrowY, Arrow);
 
-            WordToScreen(pixel, 184, 208, "\\2026 Beanie Code");
+            WordToScreen(pixel, 152, 208, "\\2026 Beanie Code");
         }
 
         HDC hdcWindow = GetDC(window_handle);
