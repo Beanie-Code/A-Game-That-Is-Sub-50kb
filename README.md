@@ -16,6 +16,7 @@ How To Play!
 Controls
 AD to move left & right
 WASD to move menu related things
+To run its SHIFT + D
 
 Space to jump & confirm letters
 Enter Confirms click on home menu, and brings you to home menu on Game Over
