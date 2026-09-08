@@ -60,6 +60,8 @@ However, if you don't feel comfortable downloading the exe(Understandable), I ga
 
 You can also check the very messy and hard to read code  too. You can even probably strip the game code, and build a Framework off of it.
 
+If you want to see the 50kb in the exe use -s flag that will rid of compiler bloat and bring it to 50kb. 
+
 
 Footage of the Game
 
