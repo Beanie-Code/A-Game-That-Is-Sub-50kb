@@ -1001,10 +1001,36 @@ void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
     }
 }
 // Draws any img that will fit the in the grid filled wtih 8x8 blocks
-void Draw8x8(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
+// void Draw8x8(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
+//     unsigned char offy = 0;
+//     unsigned char offx = 0;
+//     for(unsigned char i = 0; i < 64; i++) {
+//         int pxPosY = offy + manualy;
+//         int pxPosX = manualx + offx;
+//         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
+//             int coord = ((pxPosY) * 288) + (pxPosX);
+ 
+//             if(coord < (62208) && coord >= 0 && array8x8[i] > 0){
+//                 pixela[coord] = colorpalette[array8x8[i]];
+//             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
+//                 pixela[coord] = colorpalette[array8x8[0]];
+//             };
+//         }
+
+//         offx++;
+//         if(offx >= 8){
+//             offx = 0;
+//             offy++;
+//         };
+//     };
+// }
+
+void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
     unsigned char offy = 0;
     unsigned char offx = 0;
-    for(unsigned char i = 0; i < 64; i++) {
+    unsigned int Size = wdth * hght;
+
+    for(unsigned char i = 0; i < Size; i++) {
         int pxPosY = offy + manualy;
         int pxPosX = manualx + offx;
         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
@@ -1018,17 +1044,17 @@ void Draw8x8(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
         }
 
         offx++;
-        if(offx >= 8){
+        if(offx >= wdth){
             offx = 0;
             offy++;
         };
     };
 }
-
-void Draw8x8FlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
+void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
     char offy = 0;
-    char offx = 7;
-    for(unsigned char i = 0; i < 64; i++) {
+    char offx = wdth - 1;
+    unsigned int Size = wdth * hght;
+    for(unsigned char i = 0; i < Size; i++) {
         int pxPosY = offy + manualy;
         int pxPosX = manualx + offx;
         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
@@ -1040,104 +1066,128 @@ void Draw8x8FlippedX(int *pixela, int manualx, int manualy, unsigned char array8
                 pixela[coord] = colorpalette[array8x8[0]];
             };
         }
- 
+
         offx--;
         if(offx < 0){
-            offx = 7;
+            offx = wdth - 1;
             offy++;
         };
     };
 }
+
+// void Draw8x8FlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
+//     char offy = 0;
+//     char offx = 7;
+//     for(unsigned char i = 0; i < 64; i++) {
+//         int pxPosY = offy + manualy;
+//         int pxPosX = manualx + offx;
+//         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
+//             int coord = ((pxPosY) * 288) + (pxPosX);
+ 
+//             if(coord < (62208) && coord >= 0 && array8x8[i] > 0){
+//                 pixela[coord] = colorpalette[array8x8[i]];
+//             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
+//                 pixela[coord] = colorpalette[array8x8[0]];
+//             };
+//         }
+ 
+//         offx--;
+//         if(offx < 0){
+//             offx = 7;
+//             offy++;
+//         };
+//     };
+// }
 // This does not manage pengWCInd index for ptr This only draw plr
-void DrawPlr(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
-    unsigned char offx = 0;
-    unsigned char offy = 0;
-    if(player_state == 0) {
-        //remeber Init, Condition, Increment
-        for(unsigned char i = 0; i < 144; i++) {
-            int pxPosY = offy + y;
-            int pxPosX = offx + x;
-            if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
-                int coord = ((pxPosY) * 288) + (pxPosX);
-                if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-                    pixela[coord] = colorpalette[array16x9or16x16[i]];
-                } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-                    pixela[coord] = colorpalette[0];
-                };
-            };
-            offx++;
-            if(offx >= 9){
-                offx = 0;
-                offy++;
-            };
-        };
-    };
-    if(player_state > 0) {
-        for(unsigned char i = 0; i < 256; i++) {
-            int pxPosY = offy + y;
-            int pxPosX = offx + x;
-            if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
-                int coord = ((pxPosY) * 288) + (pxPosX);
-                if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-                    pixela[coord] = colorpalette[array16x9or16x16[i]];
-                } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-                    pixela[coord] = colorpalette[0];
-                };
-            };
-            offx++;
-            if(offx >= 16){
-                offx = 0;
-                offy++;
-            };
-        };
-    };
-};
+// void DrawPlr(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
+//     unsigned char offx = 0;
+//     unsigned char offy = 0;
+//     if(player_state == 0) {
+//         //remeber Init, Condition, Increment
+//         for(unsigned char i = 0; i < 144; i++) {
+//             int pxPosY = offy + y;
+//             int pxPosX = offx + x;
+//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
+//                 int coord = ((pxPosY) * 288) + (pxPosX);
+//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
+//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
+//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
+//                     pixela[coord] = colorpalette[0];
+//                 };
+//             };
+//             offx++;
+//             if(offx >= 9){
+//                 offx = 0;
+//                 offy++;
+//             };
+//         };
+//     };
+//     if(player_state > 0) {
+//         for(unsigned char i = 0; i < 256; i++) {
+//             int pxPosY = offy + y;
+//             int pxPosX = offx + x;
+//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
+//                 int coord = ((pxPosY) * 288) + (pxPosX);
+//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
+//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
+//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
+//                     pixela[coord] = colorpalette[0];
+//                 };
+//             };
+//             offx++;
+//             if(offx >= 16){
+//                 offx = 0;
+//                 offy++;
+//             };
+//         };
+//     };
+// };
 // This draw flipped player
-void DrawPlrFlip(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
-    char offx = 8;
-    char offy = 0;
-    if(player_state == 0) {
-        //remeber Init, Condition, Increment
-        for(unsigned char i = 0; i < 144; i++) {
-            int pxPosY = offy + y;
-            int pxPosX = x + offx;
-            if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
-                int coord = ((pxPosY) * 288) + (pxPosX);
-                if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-                    pixela[coord] = colorpalette[array16x9or16x16[i]];
-                } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-                    pixela[coord] = colorpalette[0];
-                };
-            };
-            offx--;
-            if(offx < 0){
-                offx = 8;
-                offy++;
-            };
-        };
-    };
-    if(player_state > 0) {
-        int offx = 15;
-        int offy = 0;
-        for(int i = 0; i < 256; i++) {
-            int pxPosY = offy + y;
-            int pxPosX = offx + x;
-            if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
-                int coord = ((pxPosY) * 288) + (pxPosX);
-                if(coord < (62208) && coord >= 0 && array16x9or16x16[i] != 0 && array16x9or16x16[i] != -1){
-                    pixela[coord] = colorpalette[array16x9or16x16[i]];
-                } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-                    pixela[coord] = colorpalette[0];
-                };
-            };
-            offx--;
-            if(offx < 0){
-                offx = 15;
-                offy++;
-            };
-        };
-    };
-};
+//void DrawPlrFlip(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
+//     char offx = 8;
+//     char offy = 0;
+//     if(player_state == 0) {
+//         //remeber Init, Condition, Increment
+//         for(unsigned char i = 0; i < 144; i++) {
+//             int pxPosY = offy + y;
+//             int pxPosX = x + offx;
+//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
+//                 int coord = ((pxPosY) * 288) + (pxPosX);
+//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
+//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
+//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
+//                     pixela[coord] = colorpalette[0];
+//                 };
+//             };
+//             offx--;
+//             if(offx < 0){
+//                 offx = 8;
+//                 offy++;
+//             };
+//         };
+//     };
+//     if(player_state > 0) {
+//         int offx = 15;
+//         int offy = 0;
+//         for(int i = 0; i < 256; i++) {
+//             int pxPosY = offy + y;
+//             int pxPosX = offx + x;
+//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
+//                 int coord = ((pxPosY) * 288) + (pxPosX);
+//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] != 0 && array16x9or16x16[i] != -1){
+//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
+//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
+//                     pixela[coord] = colorpalette[0];
+//                 };
+//             };
+//             offx--;
+//             if(offx < 0){
+//                 offx = 15;
+//                 offy++;
+//             };
+//         };
+//     };
+// };
 //Collision Funciton
 int collision_detection(float px, float py, float pw, float ph, float wx, float wy, float ww, float wh){
     if(px < wx + ww && py < wy + wh && py + ph > wy && px + pw > wx){
@@ -1198,46 +1248,46 @@ void WordToScreen(int *buffer, int x, int y, char string[]){
     for(unsigned int i = 0; i < size; i++){
         currentN = string[i];
         switch(currentN) {
-            case 'A': case 'a': Draw8x8(buffer, currentX, currentY, letterA); break;
-            case 'B': case 'b': Draw8x8(buffer, currentX, currentY, letterB); break;
-            case 'C': case 'c': Draw8x8(buffer, currentX, currentY, letterC); break; //FINSIH
-            case 'D': case 'd': Draw8x8(buffer, currentX, currentY, letterD); break;
-            case 'E': case 'e': Draw8x8(buffer, currentX, currentY, letterE); break;
-            case 'F': case 'f': Draw8x8(buffer, currentX, currentY, letterF); break;
-            case 'G': case 'g': Draw8x8(buffer, currentX, currentY, letterG); break;
-            case 'H': case 'h': Draw8x8(buffer, currentX, currentY, letterH); break;
-            case 'I': case 'i': Draw8x8(buffer, currentX, currentY, letterI); break;
-            case 'J': case 'j': Draw8x8(buffer, currentX, currentY, letterJ); break;
-            case 'K': case 'k': Draw8x8(buffer, currentX, currentY, letterK); break;
-            case 'L': case 'l': Draw8x8(buffer, currentX, currentY, letterL); break;
-            case 'M': case 'm': Draw8x8(buffer, currentX, currentY, letterM); break;
-            case 'N': case 'n': Draw8x8(buffer, currentX, currentY, letterN); break;
-            case 'O': case 'o': Draw8x8(buffer, currentX, currentY, letterO); break;
-            case 'P': case 'p': Draw8x8(buffer, currentX, currentY, letterP); break;
-            case 'Q': case 'q': Draw8x8(buffer, currentX, currentY, letterQ); break;
-            case 'R': case 'r': Draw8x8(buffer, currentX, currentY, letterR); break;
-            case 'S': case 's': Draw8x8(buffer, currentX, currentY, letterS); break;
-            case 'T': case 't': Draw8x8(buffer, currentX, currentY, letterT); break;
-            case 'U': case 'u': Draw8x8(buffer, currentX, currentY, letterU); break;
-            case 'V': case 'v': Draw8x8(buffer, currentX, currentY, letterV); break;
-            case 'W': case 'w': Draw8x8(buffer, currentX, currentY, letterW); break;
-            case 'X': case 'x': Draw8x8(buffer, currentX, currentY, letterX); break;
-            case 'Y': case 'y': Draw8x8(buffer, currentX, currentY, letterY); break;
-            case 'Z': case 'z': Draw8x8(buffer, currentX, currentY, letterZ); break;
-            case '1': Draw8x8(buffer, currentX, currentY, number1); break;
-            case '2': Draw8x8(buffer, currentX, currentY, number2); break;
-            case '3': Draw8x8(buffer, currentX, currentY, number3); break;
-            case '4': Draw8x8(buffer, currentX, currentY, number4); break;
-            case '5': Draw8x8(buffer, currentX, currentY, number5); break;
-            case '6': Draw8x8(buffer, currentX, currentY, number6); break;
-            case '7': Draw8x8(buffer, currentX, currentY, number7); break;
-            case '8': Draw8x8(buffer, currentX, currentY, number8); break;
-            case '9': Draw8x8(buffer, currentX, currentY, number9); break;
-            case '0': Draw8x8(buffer, currentX, currentY, letterO); break;
-            case '-': Draw8x8(buffer, currentX, currentY, Dash); break;
-            case '.': case ',': Draw8x8(buffer, currentX, currentY, numberper); break;
+            case 'A': case 'a': Draw(buffer, currentX, currentY, letterA, 8, 8); break;
+            case 'B': case 'b': Draw(buffer, currentX, currentY, letterB, 8, 8); break;
+            case 'C': case 'c': Draw(buffer, currentX, currentY, letterC, 8, 8); break; //FINSIH
+            case 'D': case 'd': Draw(buffer, currentX, currentY, letterD, 8, 8); break;
+            case 'E': case 'e': Draw(buffer, currentX, currentY, letterE, 8, 8); break;
+            case 'F': case 'f': Draw(buffer, currentX, currentY, letterF, 8, 8); break;
+            case 'G': case 'g': Draw(buffer, currentX, currentY, letterG, 8, 8); break;
+            case 'H': case 'h': Draw(buffer, currentX, currentY, letterH, 8, 8); break;
+            case 'I': case 'i': Draw(buffer, currentX, currentY, letterI, 8, 8); break;
+            case 'J': case 'j': Draw(buffer, currentX, currentY, letterJ, 8, 8); break;
+            case 'K': case 'k': Draw(buffer, currentX, currentY, letterK, 8, 8); break;
+            case 'L': case 'l': Draw(buffer, currentX, currentY, letterL, 8, 8); break;
+            case 'M': case 'm': Draw(buffer, currentX, currentY, letterM, 8, 8); break;
+            case 'N': case 'n': Draw(buffer, currentX, currentY, letterN, 8, 8); break;
+            case 'O': case 'o': Draw(buffer, currentX, currentY, letterO, 8, 8); break;
+            case 'P': case 'p': Draw(buffer, currentX, currentY, letterP, 8, 8); break;
+            case 'Q': case 'q': Draw(buffer, currentX, currentY, letterQ, 8, 8); break;
+            case 'R': case 'r': Draw(buffer, currentX, currentY, letterR, 8, 8); break;
+            case 'S': case 's': Draw(buffer, currentX, currentY, letterS, 8, 8); break;
+            case 'T': case 't': Draw(buffer, currentX, currentY, letterT, 8, 8); break;
+            case 'U': case 'u': Draw(buffer, currentX, currentY, letterU, 8, 8); break;
+            case 'V': case 'v': Draw(buffer, currentX, currentY, letterV, 8, 8); break;
+            case 'W': case 'w': Draw(buffer, currentX, currentY, letterW, 8, 8); break;
+            case 'X': case 'x': Draw(buffer, currentX, currentY, letterX, 8, 8); break;
+            case 'Y': case 'y': Draw(buffer, currentX, currentY, letterY, 8, 8); break;
+            case 'Z': case 'z': Draw(buffer, currentX, currentY, letterZ, 8, 8); break;
+            case '1': Draw(buffer, currentX, currentY, number1, 8, 8); break;
+            case '2': Draw(buffer, currentX, currentY, number2, 8, 8); break;
+            case '3': Draw(buffer, currentX, currentY, number3, 8, 8); break;
+            case '4': Draw(buffer, currentX, currentY, number4, 8, 8); break;
+            case '5': Draw(buffer, currentX, currentY, number5, 8, 8); break;
+            case '6': Draw(buffer, currentX, currentY, number6, 8, 8); break;
+            case '7': Draw(buffer, currentX, currentY, number7, 8, 8); break;
+            case '8': Draw(buffer, currentX, currentY, number8, 8, 8); break;
+            case '9': Draw(buffer, currentX, currentY, number9, 8, 8); break;
+            case '0': Draw(buffer, currentX, currentY, letterO, 8, 8); break;
+            case '-': Draw(buffer, currentX, currentY, Dash, 8, 8); break;
+            case '.': case ',': Draw(buffer, currentX, currentY, numberper, 8, 8); break;
             case '\n': currentY += 8; break;
-            case '\\': Draw8x8(buffer, currentX, currentY, CopyRight); break;
+            case '\\': Draw(buffer, currentX, currentY, CopyRight, 8, 8); break;
             break;
         }
         currentX += 8;
@@ -1492,7 +1542,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         //Jumping
             if((GetAsyncKeyState(VK_SPACE) & 0x8000) && jumpcooldown_current - jumpcooldown_lastjump >= 150 && OnGround && !player_state) {
                 playerYvel = -3.1415;
-                jumpcooldown_lastjump = GetTickCount64();
+                jumpcooldown_lastjump = jumpcooldown_current;
                 pengWCInd = pengLength - 1;
                 OnGround = 0;
                 JumpPlay = 1;
@@ -1501,7 +1551,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             //Running
             if((GetAsyncKeyState(VK_LSHIFT) & 0x8000) && (GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount64();
+                penganim_timer = jumpcooldown_current;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1512,7 +1562,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         //Going Backwards
             if((GetAsyncKeyState(0x41) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && !playerRun && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount64();
+                penganim_timer = jumpcooldown_current;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1520,12 +1570,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 playerXacc = -4;
                 playerWalk = 1;
                 backward = 1;
-                penganim_timer = GetTickCount64();
+                penganim_timer = jumpcooldown_current;
             }
             // Walking
             if((GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= anim_cooldown && !backward && !playerRun && OnGround  && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount64();
+                penganim_timer = jumpcooldown_current;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1533,7 +1583,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 playerXacc = 4;
                 playerWalk = 1;
                 forward = 1;
-                penganim_timer = GetTickCount64();
+                penganim_timer = jumpcooldown_current;
             }
             if(jumpcooldown_current - penganim_timer >= (anim_cooldown + 5) && playerYvel < 0) {
                 pengWCInd = pengLength - 1;
@@ -1655,7 +1705,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     walls[i].x = current_pixelmove + 288;
                     walls[i].y = 168;
                     walls[i].active = 1;
-                    last_check_time = GetTickCount64();
+                    last_check_time = jumpcooldown_current;
                     SpawnMaxLimit -= 50;
                     break;
                 }
@@ -1677,18 +1727,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 if(playerXvel < 0) {
                     playerXvel = 0;
                 }
-                last_tick = GetTickCount64();
+                last_tick = jumpcooldown_current;
             }
             if(!playerWalk && !playerRun && playerXvel < 0 && jumpcooldown_current - last_tick > slowdown_wait) {
                 playerXvel += 0.6;
                 if(playerXvel > 0) {
                     playerXvel = 0;
                 }
-                last_tick = GetTickCount64();
+                last_tick = jumpcooldown_current;
             }
  
             if(playerY >= 168){
-                if(falling){jumpcooldown_lastjump = GetTickCount64();}
+                if(falling){jumpcooldown_lastjump = jumpcooldown_current;}
                 playerY = 168;
                 playerYvel = 0;
                 falling = 0;
@@ -1759,7 +1809,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             }
 
         }
-        
+
         if(JumpPlay && jumpcooldown_current - JumpPlayLast >= 150){
             JumpPlay = 0;
             phasessq2 = 0;
@@ -1769,13 +1819,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 // Menu
         if(GameState == 0) {
             if((GetAsyncKeyState(0x57) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = GetTickCount64();
+                lc_start_button = jumpcooldown_current;
                 start_button_var--;
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
             }
             if((GetAsyncKeyState(0x53) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = GetTickCount64();
+                lc_start_button = jumpcooldown_current;
                 start_button_var++;
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
@@ -1800,7 +1850,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 if(ArrowY == GameStartGameY && jumpcooldown_current - lc_start_button >= ml_start_button) {
                     GameState = 4;
                     StartButtFlashNum = 0;
-                    lc_start_button = GetTickCount64();
+                    lc_start_button = jumpcooldown_current;
                     player_state = 0;
                     for(unsigned char i = 0; i < WallNum; i++){
                         walls[i].x = 0;
@@ -1818,7 +1868,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     SpawnMaxLimit = 8000;
                 }
                 if(ArrowY == SettingY && jumpcooldown_current - lc_start_button >= ml_start_button){
-                    lc_start_button = jumpcooldown_current;
+                    lc_start_button = GetTickCount64();
                     GameState = 3;
                     inputPlay = 1;
                     lastIPlay = jumpcooldown_current;
@@ -2068,31 +2118,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             WordToScreen(pixel, InitialsX, QuitY + 40, Rank3);
  
             WordToScreen(pixel, 100, GameStartY, "PENGUIN RUN");
+
+
+            WordToScreen(pixel, TitleNameX, GameStartGameY, "START GAME");
  
-            Draw8x8(pixel, TitleNameX, GameStartGameY, letterS2);
-            Draw8x8(pixel, TitleNameX + 8, GameStartGameY, letterT);
-            Draw8x8(pixel, TitleNameX + 16, GameStartGameY, letterA);
-            Draw8x8(pixel, TitleNameX + 24, GameStartGameY, letterR);
-            Draw8x8(pixel, TitleNameX + 32, GameStartGameY, letterT);
-            Draw8x8(pixel, TitleNameX + 48, GameStartGameY, letterG);
-            Draw8x8(pixel, TitleNameX + 56, GameStartGameY, letterA);
-            Draw8x8(pixel, TitleNameX + 64, GameStartGameY, letterM);
-            Draw8x8(pixel, TitleNameX + 72, GameStartGameY, letterE);
+            WordToScreen(pixel, TitleNameX, SettingY, "Setting");
  
-            Draw8x8(pixel, TitleNameX, SettingY, letterS2);
-            Draw8x8(pixel, TitleNameX + 8, SettingY, letterE);
-            Draw8x8(pixel, TitleNameX + 16, SettingY, letterT);
-            Draw8x8(pixel, TitleNameX + 24, SettingY, letterT);
-            Draw8x8(pixel, TitleNameX + 32, SettingY, letterI);
-            Draw8x8(pixel, TitleNameX + 40, SettingY, letterN);
-            Draw8x8(pixel, TitleNameX + 48, SettingY, letterG);
+            WordToScreen(pixel, TitleNameX, QuitY, "QUIT");
  
-            Draw8x8(pixel, TitleNameX, QuitY, letterQ);
-            Draw8x8(pixel, TitleNameX + 8, QuitY, letterU);
-            Draw8x8(pixel, TitleNameX + 16, QuitY, letterI);
-            Draw8x8(pixel, TitleNameX + 24, QuitY, letterT);
- 
-            Draw8x8(pixel, TitleNameX - 10, ArrowY, Arrow);
+            Draw(pixel, TitleNameX - 10, ArrowY, Arrow, 8, 8);
 
             WordToScreen(pixel, 152, 208, "\\2026 Beanie Code");
         };
@@ -2103,18 +2137,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             for(int i = 0; i < 37; i++){
                 int GroundX = i * 8;
                 GroundX -= GroundOffset;
-                Draw8x8(pixel, GroundX, 184, SnowIceTile);
-                Draw8x8(pixel, GroundX, 192, SnowCoveredDirt);
-                Draw8x8(pixel, GroundX, 200, DirtUpper);
-                Draw8x8(pixel, GroundX, 208, DirtLower);
+                Draw(pixel, GroundX, 184, SnowIceTile, 8, 8);
+                Draw(pixel, GroundX, 192, SnowCoveredDirt, 8, 8);
+                Draw(pixel, GroundX, 200, DirtUpper, 8, 8);
+                Draw(pixel, GroundX, 208, DirtLower, 8, 8);
             }
         //Walls
             for(int i = 0; i < WallNum; i++) {
                 if(walls[i].active) {
                     int wallx = (int)((walls[i].x - roundedcurrent_pixelmove) + 0.5);
                     int wally = (int)(walls[i].y + 0.5);
-                    Draw8x8(pixel, wallx, wally, IceWallUpper);
-                    Draw8x8(pixel, wallx, (wally + 8), IceWallLower);
+                    Draw(pixel, wallx, wally, IceWallUpper, 8, 8);
+                    Draw(pixel, wallx, (wally + 8), IceWallLower, 8, 8);
                 }
             }
 
@@ -2123,7 +2157,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     int bullety = my_round(bulletsd[i].y);
                     int bulletx = my_round(bulletsd[i].x);
 
-                    Draw8x8(pixel, bulletx, bullety, Bullet);
+                    Draw(pixel, bulletx, bullety, Bullet, 8, 8);
                     //Draw8x8(pixel, bulletx, bullety, IceWallLower);
                 }
             }
@@ -2144,21 +2178,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         //Player Always on top
     //Player
             if (player_state == 0 && pengWCInd < pengLength){
-                if(playerXvel < 0){DrawPlrFlip(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd]);}
-                else {DrawPlr(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd]);}
-            }else if(player_state > 0) {DrawPlr(pixel, PplayerX, PplayerY, Efox);}
+                if(playerXvel < 0){DrawFlippedX(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);}
+                else {Draw(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);}
+            }else if(player_state > 0) {Draw(pixel, PplayerX, PplayerY, Efox, 16, 9);}
         }
  
     // GameOver
         if(GameState == 2) {
-            Draw8x8(pixel, GameOverStartx, GameOverY, letterG); 
-            Draw8x8(pixel, GameOverStartx + 8, GameOverY, letterA);
-            Draw8x8(pixel, GameOverStartx + 16, GameOverY, letterM);
-            Draw8x8(pixel, GameOverStartx + 23, GameOverY, letterE);
-            Draw8x8(pixel, GameOverStartx + 39, GameOverY, letterO);
-            Draw8x8(pixel, GameOverStartx + 47, GameOverY, letterV);
-            Draw8x8(pixel, GameOverStartx + 55, GameOverY, letterE);
-            Draw8x8(pixel, GameOverStartx + 63, GameOverY, letterR);
+            Draw(pixel, GameOverStartx, GameOverY, letterG, 8, 8); 
+            Draw(pixel, GameOverStartx + 8, GameOverY, letterA, 8, 8);
+            Draw(pixel, GameOverStartx + 16, GameOverY, letterM, 8, 8);
+            Draw(pixel, GameOverStartx + 23, GameOverY, letterE, 8, 8);
+            Draw(pixel, GameOverStartx + 39, GameOverY, letterO, 8, 8);
+            Draw(pixel, GameOverStartx + 47, GameOverY, letterV, 8, 8);
+            Draw(pixel, GameOverStartx + 55, GameOverY, letterE, 8, 8);
+            Draw(pixel, GameOverStartx + 63, GameOverY, letterR, 8, 8);
 
             char StringB[6];
             int newVal = (current_pixelmove < 0) ? -current_pixelmove : current_pixelmove;
@@ -2175,24 +2209,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             WordToScreen(pixel, 8, 200, "Confirm Letter, Using Jump Button.");
 
             CurrKeyBoardX = (KeyBoardIndex * 8) + KeyBoardX;
-            Draw8x8(pixel, CurrKeyBoardX, 184, SelectBox);
+            Draw(pixel, CurrKeyBoardX, 184, SelectBox, 8, 8);
         };
 
     // Settings
         if(GameState == 3){
-            Draw8x8FlippedX(pixel, 0, 0, Arrow); // Back Arrow
+            DrawFlippedX(pixel, 0, 0, Arrow, 8, 8); // Back Arrow
             WordToScreen(pixel, SettingNX, 0, "Settings");
-            Draw8x8FlippedX(pixel, SettingNX - 16, 112, Arrow);
-            Draw8x8(pixel, SettingNX + 8 + (8*8), 112, Arrow);
+            DrawFlippedX(pixel, SettingNX - 16, 112, Arrow, 8, 8);
+            Draw(pixel, SettingNX + 8 + (8*8), 112, Arrow, 8, 8);
             WordToScreen(pixel, my_round((288 - (8*6)) / 2), 96, "Volume");
             if(settingSelect == 1){
-                Draw8x8(pixel, 0, 0, SelectBox);
+                Draw(pixel, 0, 0, SelectBox, 8, 8);
             }
             else if(settingSelect == 2){
-                Draw8x8(pixel, SettingNX - 16, 112, SelectBox);
+                Draw(pixel, SettingNX - 16, 112, SelectBox, 8, 8);
             }
             else if(settingSelect == 3){
-                Draw8x8(pixel, SettingNX + 8 + (8*8), 112, SelectBox);
+                Draw(pixel, SettingNX + 8 + (8*8), 112, SelectBox, 8, 8);
             }
             char StrBuffB[5];
             int PrintVal = my_round(VolumeAmount * 100);
@@ -2245,31 +2279,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             WordToScreen(pixel, 100, GameStartY, "PENGUIN RUN");
 
             if(ShowStartButt){
-                Draw8x8(pixel, TitleNameX, GameStartGameY, letterS2);
-                Draw8x8(pixel, TitleNameX + 8, GameStartGameY, letterT);
-                Draw8x8(pixel, TitleNameX + 16, GameStartGameY, letterA);
-                Draw8x8(pixel, TitleNameX + 24, GameStartGameY, letterR);
-                Draw8x8(pixel, TitleNameX + 32, GameStartGameY, letterT);
-                Draw8x8(pixel, TitleNameX + 48, GameStartGameY, letterG);
-                Draw8x8(pixel, TitleNameX + 56, GameStartGameY, letterA);
-                Draw8x8(pixel, TitleNameX + 64, GameStartGameY, letterM);
-                Draw8x8(pixel, TitleNameX + 72, GameStartGameY, letterE);
+
+                WordToScreen(pixel, TitleNameX, GameStartGameY, "START GAME");
             }
  
-            Draw8x8(pixel, TitleNameX, SettingY, letterS2);
-            Draw8x8(pixel, TitleNameX + 8, SettingY, letterE);
-            Draw8x8(pixel, TitleNameX + 16, SettingY, letterT);
-            Draw8x8(pixel, TitleNameX + 24, SettingY, letterT);
-            Draw8x8(pixel, TitleNameX + 32, SettingY, letterI);
-            Draw8x8(pixel, TitleNameX + 40, SettingY, letterN);
-            Draw8x8(pixel, TitleNameX + 48, SettingY, letterG);
+            WordToScreen(pixel, TitleNameX, SettingY, "Setting");
+
+            WordToScreen(pixel, TitleNameX, QuitY, "Quit");
  
-            Draw8x8(pixel, TitleNameX, QuitY, letterQ);
-            Draw8x8(pixel, TitleNameX + 8, QuitY, letterU);
-            Draw8x8(pixel, TitleNameX + 16, QuitY, letterI);
-            Draw8x8(pixel, TitleNameX + 24, QuitY, letterT);
- 
-            Draw8x8(pixel, TitleNameX - 10, ArrowY, Arrow);
+            Draw(pixel, TitleNameX - 10, ArrowY, Arrow, 8, 8);
 
             WordToScreen(pixel, 152, 208, "\\2026 Beanie Code");
         }
