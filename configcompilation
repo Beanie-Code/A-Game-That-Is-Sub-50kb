@@ -1,7 +1,9 @@
 Stuff Used To compile it
-gcc main.c -o app.exe -mwindows -Os -s -fdata-sections -ffunction-sections "-Wl,--gc-sections"
-2. gcc main.c -o app.exe -mwindows -Os -s -fdata-sections -ffunction-sections "-Wl,--gc-sections"
+--gcc main.c -o app.exe -mwindows -Os -s -fdata-sections -ffunction-sections "-Wl,--gc-sections"
+--2. gcc main.c -o app.exe -mwindows -Os -s -fdata-sections -ffunction-sections "-Wl,--gc-sections"
 
+Those are old stuff
+its now gcc game.c -o app.exe -s -mwindows -lwinmm -lgdi32
 
 Key names 
 Key 	Hex Code	Key	Hex Code	Key	Hex Code
