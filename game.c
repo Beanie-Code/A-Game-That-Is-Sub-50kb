@@ -1364,7 +1364,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     int last_pixelmove = 0;
     float current_pixelmove = 0;
     unsigned char anim_cooldown_run = 20;
-    unsigned int last_check_time = GetTickCount();
+    unsigned int last_check_time = GetTickCount64();
     int SpawnMaxLimit = 8000;
     unsigned char can_moveX = 1;
     unsigned char playerW = 0;
@@ -1407,7 +1407,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     //Actaull LooP
 
     unsigned int SettingNX = my_round((288 - (8 * 8)) / 2);
-    int LastTickV = GetTickCount();
+    int LastTickV = GetTickCount64();
     unsigned char maxTickV = 250;
 
     unsigned int MaxBulletSpawn = 2000;
@@ -1448,7 +1448,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         SettingY = 120;
         QuitY = 128;
         int GameStartGameX = Middlex - 32;
-        jumpcooldown_current = GetTickCount();
+        jumpcooldown_current = GetTickCount64();
 
             //Infamous Quit Q Fass Quit
         if((GetAsyncKeyState(0x51) & 0x8000)){
@@ -1492,7 +1492,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         //Jumping
             if((GetAsyncKeyState(VK_SPACE) & 0x8000) && jumpcooldown_current - jumpcooldown_lastjump >= 150 && OnGround && !player_state) {
                 playerYvel = -3.1415;
-                jumpcooldown_lastjump = GetTickCount();
+                jumpcooldown_lastjump = GetTickCount64();
                 pengWCInd = pengLength - 1;
                 OnGround = 0;
                 JumpPlay = 1;
@@ -1501,7 +1501,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             //Running
             if((GetAsyncKeyState(VK_LSHIFT) & 0x8000) && (GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount();
+                penganim_timer = GetTickCount64();
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1512,7 +1512,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         //Going Backwards
             if((GetAsyncKeyState(0x41) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && !playerRun && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount();
+                penganim_timer = GetTickCount64();
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1520,12 +1520,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 playerXacc = -4;
                 playerWalk = 1;
                 backward = 1;
-                penganim_timer = GetTickCount();
+                penganim_timer = GetTickCount64();
             }
             // Walking
             if((GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= anim_cooldown && !backward && !playerRun && OnGround  && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = GetTickCount();
+                penganim_timer = GetTickCount64();
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
                 };
@@ -1533,7 +1533,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 playerXacc = 4;
                 playerWalk = 1;
                 forward = 1;
-                penganim_timer = GetTickCount();
+                penganim_timer = GetTickCount64();
             }
             if(jumpcooldown_current - penganim_timer >= (anim_cooldown + 5) && playerYvel < 0) {
                 pengWCInd = pengLength - 1;
@@ -1655,7 +1655,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     walls[i].x = current_pixelmove + 288;
                     walls[i].y = 168;
                     walls[i].active = 1;
-                    last_check_time = GetTickCount();
+                    last_check_time = GetTickCount64();
                     SpawnMaxLimit -= 50;
                     break;
                 }
@@ -1677,18 +1677,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 if(playerXvel < 0) {
                     playerXvel = 0;
                 }
-                last_tick = GetTickCount();
+                last_tick = GetTickCount64();
             }
             if(!playerWalk && !playerRun && playerXvel < 0 && jumpcooldown_current - last_tick > slowdown_wait) {
                 playerXvel += 0.6;
                 if(playerXvel > 0) {
                     playerXvel = 0;
                 }
-                last_tick = GetTickCount();
+                last_tick = GetTickCount64();
             }
  
             if(playerY >= 168){
-                if(falling){jumpcooldown_lastjump = GetTickCount();}
+                if(falling){jumpcooldown_lastjump = GetTickCount64();}
                 playerY = 168;
                 playerYvel = 0;
                 falling = 0;
@@ -1769,13 +1769,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 // Menu
         if(GameState == 0) {
             if((GetAsyncKeyState(0x57) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = GetTickCount();
+                lc_start_button = GetTickCount64();
                 start_button_var--;
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
             }
             if((GetAsyncKeyState(0x53) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = GetTickCount();
+                lc_start_button = GetTickCount64();
                 start_button_var++;
                 inputPlay = 1;
                 lastIPlay = jumpcooldown_current;
@@ -1800,7 +1800,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 if(ArrowY == GameStartGameY && jumpcooldown_current - lc_start_button >= ml_start_button) {
                     GameState = 4;
                     StartButtFlashNum = 0;
-                    lc_start_button = GetTickCount();
+                    lc_start_button = GetTickCount64();
                     player_state = 0;
                     for(unsigned char i = 0; i < WallNum; i++){
                         walls[i].x = 0;
@@ -1818,13 +1818,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     SpawnMaxLimit = 8000;
                 }
                 if(ArrowY == SettingY && jumpcooldown_current - lc_start_button >= ml_start_button){
-                    lc_start_button = GetTickCount();
+                    lc_start_button = jumpcooldown_current;
                     GameState = 3;
                     inputPlay = 1;
                     lastIPlay = jumpcooldown_current;
                 }
                 if(ArrowY == QuitY && jumpcooldown_current - lc_start_button >= ml_start_button) {
-                    lc_start_button = GetTickCount();
+                    lc_start_button = jumpcooldown_current;
                     playing = 0;
                 }
             }
@@ -2004,7 +2004,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 GameState = 1;
                 ShowStartButt = 0;
                 inputPlay2 = 0;
-                lc_start_button = GetTickCount();
+                lc_start_button = jumpcooldown_current;
                 player_state = 0;
                 for(unsigned char i = 0; i < WallNum; i++){
                     walls[i].x = 0;
