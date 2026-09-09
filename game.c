@@ -15,7 +15,8 @@
 
 //Bg/Tiles data
 
-// REMEMBER 255 is BLACK 0 TRANS
+// REMEMBER 255 is BLACK 0 TRANS 
+//Functions use this global space
 //SPRITE CHARS
 unsigned char SnowIceTile[64] = {
     4, 4, 4, 4, 4, 4, 4, 4,
@@ -957,36 +958,37 @@ void InitAudio(){
         return; 
     }
     ResetEvent(hAudioEvent);
+    // Header A
     headerA.lpData = (LPSTR)SbuffA;
     headerA.dwBufferLength = 882 * sizeof(short);
     waveOutPrepareHeader(hWaveOut, &headerA, sizeof(WAVEHDR));
- 
+    //HEADER B
     headerB.lpData = (LPSTR)SbuffB;
     headerB.dwBufferLength = 882 * sizeof(short);
     waveOutPrepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
- 
+    // HEADER C
     headerC.lpData = (LPSTR)SbuffC;
     headerC.dwBufferLength = 882 * sizeof(short);
     waveOutPrepareHeader(hWaveOut, &headerC, sizeof(WAVEHDR));
- 
+    // Send audio buff
     waveOutWrite(hWaveOut, &headerA, sizeof(WAVEHDR));
     waveOutWrite(hWaveOut, &headerB, sizeof(WAVEHDR));
     waveOutWrite(hWaveOut, &headerC, sizeof(WAVEHDR));
- 
+ // Decrease Frequency of menu tracks
     Yikes(TriMenu, 30);
     Yikes(SawToothMenu, 25);
 }
 // This inputs sound for different sections
 void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
     if(hdr->dwFlags & WHDR_DONE) {
-        if(GameState == 0 || GameState == 3){
+        if(GameState == 0 || GameState == 3){ // Menu SCreens
             SoundMain(audio_bufferSq, 0, NotesFreqs[SawToothMenu[TrackInd]], &phasessq, VolumeAmount); //Square Voice 1
             SoundMain(audio_bufferTri, 1, NotesFreqs[TriMenu[TrackInd]], &phasetri, VolumeAmount); //Triangle Voice
             TrackInd++;
  
             if(TrackInd >= 160){TrackInd = 0;}
         }
-        else if(GameState == 2){
+        else if(GameState == 2){ // Gameover Screen
             EmptyBuff(audio_bufferTri);
 
             GameOverTrackInd++;
@@ -994,28 +996,28 @@ void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
             
             SoundMain(audio_bufferSq, 0, NotesFreqs[Track1SqGameOver[GameOverTrackInd]], &phasessq, VolumeAmount);
         }
-        else if(GameState == 1){
+        else if(GameState == 1){ // Game Running Screen
             GameTIndex++;
             if(GameTIndex >= 160){GameTIndex = 0;}
             SoundMain(audio_bufferSq, 0, NotesFreqs[Track2Sq[GameTIndex]], &phasessq, VolumeAmount);
             SoundMain(audio_bufferTri, 1, NotesFreqs[Track1Tri[GameTIndex]], &phasetri, VolumeAmount);
-        }
+        } // if not any then don't play a sound
         else{
             EmptyBuff(audio_bufferTri);
             EmptyBuff(audio_bufferSq);
         }
 
-        if(inputPlay){
+        if(inputPlay){// Input
             SoundMain(audio_bufferSq2, 0, NotesFreqs[25], &phasessq2, VolumeAmount);
         }
-        else if(inputPlay2 == 1){
+        else if(inputPlay2 == 1){ // Limiting to one input noise
             SoundMain(audio_bufferSq2, 0, NotesFreqs[28], &phasessq2, VolumeAmount);
         }
         else {
             EmptyBuff(audio_bufferSq2);
         }
 
-        if(JumpPlay){
+        if(JumpPlay){ // If jump Play a tri wave. This also Drops Game Running Music Triangle base like the ACTUAL SMB1!
             SoundMain(audio_bufferTri, 1, NotesFreqs[24], &phasessq2, VolumeAmount);
         }
  
@@ -1032,13 +1034,16 @@ void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
 }
 
 void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
+    //Draw Variables
     unsigned char offy = 0;
     unsigned char offx = 0;
     unsigned int Size = wdth * hght;
 
     for(unsigned char i = 0; i < Size; i++) {
+        //Current Pixel of Image
         int pxPosY = offy + manualy;
         int pxPosX = manualx + offx;
+        // Draw pixel if in bounds
         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
             int coord = ((pxPosY) * 288) + (pxPosX);
  
@@ -1048,7 +1053,7 @@ void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsig
                 pixela[coord] = colorpalette[array8x8[0]];
             }
         }
-
+// Pixel Increment
         offx++;
         if(offx >= wdth){
             offx = 0;
@@ -1057,12 +1062,15 @@ void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsig
     }
 }
 void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
+    // Init
     char offy = 0;
-    char offx = wdth - 1;
+    char offx = wdth - 1; // Flip
     unsigned int Size = wdth * hght;
+    // Draw Current Pixel
     for(unsigned char i = 0; i < Size; i++) {
         int pxPosY = offy + manualy;
         int pxPosX = manualx + offx;
+        // Draw if in bounds
         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
             int coord = ((pxPosY) * 288) + (pxPosX);
  
@@ -1072,7 +1080,7 @@ void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[
                 pixela[coord] = colorpalette[array8x8[0]];
             }
         }
-
+        // Decrease Offset
         offx--;
         if(offx < 0){
             offx = wdth - 1;
@@ -1083,13 +1091,13 @@ void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[
 
 //Collision Funciton
 int collision_detection(float px, float py, float pw, float ph, float wx, float wy, float ww, float wh){
-    if(px < wx + ww && py < wy + wh && py + ph > wy && px + pw > wx){
+    if(px < wx + ww && py < wy + wh && py + ph > wy && px + pw > wx){ // If touching
         return 1;
     } return 0;
 }
 //Turns String into PNG & prints it
 
-void WordToScreen(int *buffer, int x, int y, char string[]){
+void WordToScreen(int *buffer, int x, int y, char string[]){ // Index thorugh a string to deliver a words & numbers on a screen
     int size = strlen(string);
     int currentN = 0;
     int currentY = y;
@@ -1142,7 +1150,7 @@ void WordToScreen(int *buffer, int x, int y, char string[]){
         currentX += 8;
     }
 }
-
+// Convert unsigned ints into numbers
 char* NumToStr(char Buffer[], int Len, unsigned int NumberConvert){
     int NumberQ = NumberConvert;
     int NumberOnesPlace = 0;
@@ -1236,6 +1244,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     SelectObject(memory_dc, bitmap_handle);
     ReleaseDC(window_handle, hdc);
     ShowWindow(window_handle, nCmdShow);
+
     InitAudio();
     header.lpData = (LPSTR)audio_bufferSq;
     header.dwBufferLength = 882 * sizeof(short);
@@ -1402,12 +1411,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             } else if(CurrentTime - penganim_timer >= (anim_cooldown + 5)){
                 pengWCInd = 0;
             }
-        // Cut Feature I Would remove it but I thought showing that  there was thought behind everything would show more knowledge
+            //Cut Feature
             if(player_state){
                 playerXacc = 2.5;
                 playerXvel += playerXacc;
                 if(playerXvel >= 8) {playerXvel = 8;}
             }
+            //End of Cut Feature
         // Maxxing Vel & Acc
             if(can_moveX  && !player_state){
                 playerXvel += playerXacc;}
@@ -1463,7 +1473,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             if(current_pixelmove < 0) {current_pixelmove = 0;}
 
         // Random Var for random Spawns(Technically not Random also pretty easy to guess)
-        unsigned char randomBi = CurrentTime % 4;// Better Solution is to make an algorithim to obscure it or possibly use unitialized mem for "True" Randomness Since Random technically only occurs when you don't know every thing. This could work by using unsigned char to  garuntee a pos and a val between 0-255. although its very likely to be 0 and shouldn't be counted on
+        unsigned char randomBi = CurrentTime % 4;
         unsigned char ablespawn = 0;
         unsigned char clear_space = 1;
 
