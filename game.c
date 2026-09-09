@@ -7,88 +7,16 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-// Game States 0-2 are being used as of 2026-09-02
- 
-//Structs
-typedef struct {
-    float x;
-    float y;
-    unsigned char active;
- 
-}ShortWall;
+//keep in mind I forgot about this project in May then came back to it in late august. So if some stuff is inconsistant that's why
+// Especially since I kind of forgot my programming conventions for this File.
 
-typedef struct {
-    float x;
-    float y;
-    float yVel;
-    unsigned char active;
-}StructBullet;
- 
- 
-//Setting up stuff
-ShortWall walls[WallNum];
-StructBullet bulletsd[bulletNum];
-//Variables
-//Remember ANYTHING is possible as long as you have A language when I mean a language ANY language similiar to C Just remember that. 
-unsigned char playing = 1;
-void* memory_buffer; //bPtr
-HDC memory_dc;
-int bW = 288;
-int bH = 216;
- 
-float g = 0.1635; //A little stronger than gravity by x10 realgravity is 0.1635
-//X positions
-float playerX = 65;
-float playerY = 0;
- 
-int PplayerX = 0;
-int PplayerY = 0;
-unsigned char backward = 0;
-unsigned char forward = 0;
-//Velocites
-float playerYvel = 0;
-float playerXvel = 0;
-//Accelerations
-float playerXacc = 0;
-float playerYacc = 0;
-float playermaxacc = 0.5;
-float playermaxvel = 4.5;
-float playermaxvelWalk = 1.8;
-float playermaxaccWalk = 0.5;
-float Predator_dist = 0;
-//Plr State; Values Ranging form 0-1 ints
-int player_state = 0;
-float snow_friction = 0.9;
-//Player Cooldowns & stopping double jump scaling
-unsigned int jumpcooldown_current = 0;
-unsigned char jumpcooldown_max = 250;
-unsigned int jumpcooldown_lastjump = 0;
-unsigned char falling = 0;
-int GroundOffset = 0;
-int GroundOffset2 = 0;
-unsigned char playerRun = 0;
-unsigned char playerWalk = 0;
-int enemyvel = 0;
- 
-const unsigned int colorpalette[256] = {0x000000, 0x4D4DFF, 0x004ECC, 0xFFD800, 0xFFFFFF, 0xEFC700, 0x639AFC, 0xBED4FC, 0x572903, 0xA05E12, 0x0B371D, 0x735005, 0xFF8707, 0x724A27, 0x562E02};
-// 0/-1 = Black/Transparent, 1 = NESBLUE/SKY, 2 = Fur Peng, 3 = Peng Feet 1, 4 = White, 5 = Peng Feet2, 7 = Ice Blue 1, 6 = Ice Blue 2, 8 = DarkDirt, 9 = Light Dirt
-//No.12 = Orange
-//No. 13 = Brown
-// No. 14 = dark brown
-//States & Stats & Words | Basically Other Section
-int GameOverStartx = 112;
-int GameOverY = 112;
-int GameState = 0;
-int TitleNameX = 144 - 39;
-int Middlex = 144;
-int Middley = 108;
-int Rmin = 0;
-int Rmax = 1;
 
-unsigned int bulletVel = 10;
+// Game States 0-4 are being used as of 2026-09-02
+
 //Bg/Tiles data
 
 // REMEMBER 255 is BLACK 0 TRANS
+//SPRITE CHARS
 unsigned char SnowIceTile[64] = {
     4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4,
@@ -347,8 +275,9 @@ unsigned char Arrow[64] = {
     0, 0, 0, 0, 0, 0, 0, 0,
 };
  
-//DAFont
-unsigned char letterA[64] = {0, 0, 0, 0, 0, 0, 0, 0,
+//Font
+unsigned char letterA[64] = {
+                   0, 0, 0, 0, 0, 0, 0, 0,
                    0, 0, 4, 4, 4, 4, 0, 0,
                    0, 4, 4, 4, 4, 4, 4, 0,
                    0, 4, 4, 0, 0, 4, 4, 0,
@@ -759,52 +688,79 @@ unsigned char CopyRight[64] = {
     0, 0, 4, 4, 4, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
+//End of Images
+ 
+//Structs
+typedef struct {
+    float x;
+    float y;
+    unsigned char active;
+ 
+}ShortWall;
+
+typedef struct {
+    float x;
+    float y;
+    float yVel;
+    unsigned char active;
+}StructBullet;
+    //Setting up stuff
+ShortWall walls[WallNum];
+StructBullet bulletsd[bulletNum];
+
+
+// ColorPalette
+const unsigned int colorpalette[80] = {0x000000, 0x4D4DFF, 0x004ECC, 0xFFD800, 0xFFFFFF, 0xEFC700, 0x639AFC, 0xBED4FC, 0x572903, 0xA05E12, 0x0B371D, 0x735005, 0xFF8707, 0x724A27, 0x562E02}; // 15 ELE TOTAL
+// 0/-1 = Black/Transparent, 1 = NESBLUE/SKY, 2 = Fur Peng, 3 = Peng Feet 1, 4 = White, 5 = Peng Feet2, 7 = Ice Blue 1, 6 = Ice Blue 2, 8 = DarkDirt, 9 = Light Dirt
+//No.12 = Orange, No. 13 = Brown, No. 14 = dark brown
+
+
+//States & Stats & Words | Basically Other Section
+int GameOverStartx = 112;
+int GameOverY = 112;
+int GameState = 0;
+int TitleNameX = 144 - 39;
+int Middlex = 144;
+int Middley = 108;
+int Rmin = 0;
+int Rmax = 1;
+
  
 //Sound Tracks
-//Sq Wave
+    //Sq Wave
 unsigned char Track1SqGameOver[160] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33
 };
+    // Main game Tracks
 unsigned char Track2Sq[160] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
 };
-// Tri Wave
+    // Tri Wave
 unsigned char Track1Tri[160] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
 };
-
+    //Track Index
 unsigned char GameTIndex = 0;
-//Noise Wave
-// unsigned char Track1NoA[160] = {
- 
-// };
-// unsigned char Track1NoASEnvelope[160] = {
 
-// };
-// Saw
-unsigned char SawToothMenu[160] = {
+//Menu tracks
+    //Saw Wave
+unsigned char SawToothMenu[160] = { // This is nolonger Swatooth Sawtooth was Cut this is Sq
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
 };
-unsigned char SawToothMenu2[160] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
+    //Tri Wave
 unsigned char TriMenu[160] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
 };
 //Track Related Variables
+    // Track Index Main
 unsigned char TrackInd = 0;
+    // Track Index Game Over
 unsigned char GameOverTrackInd = 0;
+    // Frequency Notes
 float NotesFreqs[53] = { 4186.01, 3951.07, 3520.00, 3135.96, 2793.83, 2637.02, 2349.32, 2090.00, 1975.53, 1760.00, 1567.98, 1396.91, 1318.51, 1174.66, 1046.50, 987.77, 880.00, 783.99, 698.46, 659.25, 587.33, 523.25, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.63, 213.47, 220.00, 196.00, 174.61, 164.81, 146.83, 130.81, 123.47, 110.00, 98.00, 87.31, 82.41, 73.42, 65.41, 61.74, 55.00, 49.00, 43.65, 41.20, 36.71, 32.70, 30.87, 27.50, 0.0};
                         // 0        1       2        3        4        5       6        7         8       9        10        11       12       13        14      15      16      17        18    19      20       21     22       23      24     25       26     27      28      29      30      31       32     33      34      35      36      37      38      39     40     41    42     43     44      45     46    47    48      49     50     51   
 // Different Levels for Inf Runner
-
-
-//Track Var
-// int FirstTrack = 0x00;
-// int SecondTrack = 0x00;
-//Sound Variables
-//NOTE MINIMUM LENGTH IS 20msfff
-//float phase = 1;
+    //Volume Variables
 unsigned char inputPlay = 0;
 unsigned char inputPlay2 = 0;
 unsigned char JumpPlay = 0;
@@ -823,11 +779,11 @@ double phasessq = 0;
 double phasessq2 = 0;
 double phasetri = 0;
 int sample_count = 0; 
+//Audio Buffers Last 20ms
 short audio_bufferSq[882];
 short audio_bufferTri[882];
-//short audio_bufferNoise[882];
-//short audio_bufferSaw[882];
-short audio_bufferSq2[882]; //1.764kb
+short audio_bufferSq2[882]; //1.764kb per buffer
+//Sound Variables
 int SoundSeed = 1;
 HWAVEOUT hWaveOut;
 WAVEHDR header = {0};
@@ -835,9 +791,92 @@ short SbuffA[882], SbuffB[882], SbuffC[882];
 WAVEHDR headerA = {0}, headerB = {0}, headerC = {0};
 double phase2 = 0.0;
 HANDLE hAudioEvent;
-
-char OUTPUTSTRNUM3DIG[3] = "   ";
  
+
+
+//Variables
+//Window and Looping Variables
+unsigned char playing = 1;
+void* memory_buffer; //bPtr
+HDC memory_dc;
+int bW = 288;
+int bH = 216;
+
+
+//Game Variables
+float g = 0.1635; //A little stronger than gravity by x10 realgravity is 0.1635
+float snow_friction = 0.9;
+
+//Player's Variables
+float playerX = 65;
+float playerY = 0;
+ 
+int PplayerX = 0;
+int PplayerY = 0;
+unsigned char backward = 0;
+unsigned char forward = 0;
+//Velocites
+float playerYvel = 0;
+float playerXvel = 0;
+
+//Accelerations
+float playerXacc = 0;
+float playermaxacc = 0.5;
+float playermaxvel = 4.5;
+float playermaxvelWalk = 1.8;
+float playermaxaccWalk = 0.5;
+
+unsigned char playerRun = 0;
+unsigned char playerWalk = 0;
+
+
+//Plr State; Values Ranging form 0-1 ints
+int player_state = 0;
+//Player Cooldowns & stopping double jump scaling
+unsigned char jumpcooldown_max = 250;
+unsigned int jumpcooldown_lastjump = 0;
+unsigned char falling = 0;
+//NON PLAYER THINGS
+int GroundOffset = 0;
+int GroundOffset2 = 0;
+
+unsigned int CurrentTime = 0; // This is Current Time
+
+int enemyvel = 0;
+float Predator_dist = 0;
+
+//Early Variables
+//Game Var
+unsigned int CooldownJ2 = 0;
+
+unsigned char anim_cooldown = 30;
+unsigned char slowdown_wait = 150;
+unsigned int last_tick = 0;
+int random = 0;
+unsigned int lastrandomcheck = 0;
+int last_pixelmove = 0;
+float current_pixelmove = 0;
+unsigned char anim_cooldown_run = 20;
+int SpawnMaxLimit = 8000;
+unsigned char can_moveX = 1;
+unsigned char playerW = 0;
+unsigned char playerH = 16;
+unsigned char OnGround = 0;
+int CollisionBefore = 0;
+unsigned int CooldownSlide = 0;
+
+//Start Var
+unsigned char start_button_var = 0;
+unsigned int lc_start_button = 0;
+unsigned int ml_start_button = 150;
+unsigned int ArrowY = 0;
+unsigned int SettingY = 0;
+unsigned int QuitY = 0;
+unsigned char settingSelect = 1;
+
+unsigned char bulletVel = 10;
+
+// Game Functions - Not Near the Actual Game
 int Noiserandom(void){
     SoundSeed = (int)phase2 * 1103515245 + 31415;//1234567 67 67 67 get it ;D LOL
     return (unsigned int)(SoundSeed / 65536) % 32768;
@@ -865,35 +904,33 @@ unsigned int Unsigned_round(float x){
     } else{ return 0;}
 }
 
-void SoundMain(short* buffer, int type, float freq1, double* clock, float vol){
+void SoundMain(short* buffer, int type, float freq1, double* clock, float vol){ 
+    //Init Sound Main
     double phaseinc = freq1 / 44100;
- 
     double currentraw = 0;
     double lastsamp = 0;
     float CorrectVolPer = vol * vol;
     float TrueVol = volume * CorrectVolPer;
-    //if(period < 2) {
-       // period = 2;
-   // }
+    // Main For Loop
     for(int i = 0; i < 882; i++){
         //int x = sample_count % period;
         short sample = 0;
         float tri = 0;
         float saw = 0;
         switch(type) {
-            case 0:
+            case 0: // Square Wave
                 //sample = (x < phase2 / 2) ? volume : -volume;//Use to have period instead of phase
                 currentraw = (*clock < 0.5f) ? TrueVol : -TrueVol;
                 break;
-            case 1:
+            case 1: // Traingle Wave
                 tri = (*clock * 4.0f) - 2.0f;
                 if (tri < 0) {tri = -tri;} 
                 currentraw = (short)((tri - 1.0f) * TrueVol);
                 break;
-            case 2: 
+            case 2: //Noise Wave
                 currentraw = (short)((Noiserandom() % (int)(volume * 2)) - volume);
                 break;
-            case 3:
+            case 3: // Sawtooth wave
                 saw = (*clock * 2.0f) - 1.0f;
                 currentraw = (short)(saw * (double)TrueVol);
                 break;
@@ -943,12 +980,8 @@ void InitAudio(){
 void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
     if(hdr->dwFlags & WHDR_DONE) {
         if(GameState == 0 || GameState == 3){
-            //SoundMain(audio_bufferSq, 0, 0, &phasessq); //Square Voice
-            SoundMain(audio_bufferSq, 0, NotesFreqs[SawToothMenu[TrackInd]], &phasessq, VolumeAmount); //SawTooth Voice
-            //SoundMain(audio_bufferSaw2, 3, NotesFreqs[SawToothMenu2[TrackInd]], &phasesaw2); // Sawtooth 2nd Voice. Yes Its Special
+            SoundMain(audio_bufferSq, 0, NotesFreqs[SawToothMenu[TrackInd]], &phasessq, VolumeAmount); //Square Voice 1
             SoundMain(audio_bufferTri, 1, NotesFreqs[TriMenu[TrackInd]], &phasetri, VolumeAmount); //Triangle Voice
-            //SoundMain(audio_bufferNoise, 2, 0, &phase2); // Noise Voice
-            //SoundMain(audio_bufferSaw, 3, 880, &phasesaw);
             TrackInd++;
  
             if(TrackInd >= 160){TrackInd = 0;}
@@ -967,9 +1000,6 @@ void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
             SoundMain(audio_bufferSq, 0, NotesFreqs[Track2Sq[GameTIndex]], &phasessq, VolumeAmount);
             SoundMain(audio_bufferTri, 1, NotesFreqs[Track1Tri[GameTIndex]], &phasetri, VolumeAmount);
         }
-        // else if(GameState == 1 || GameState == 3){
-        //     if(TrackInd >= 160){TrackInd = 0;}
-        // }
         else{
             EmptyBuff(audio_bufferTri);
             EmptyBuff(audio_bufferSq);
@@ -1000,30 +1030,6 @@ void fillBuffSound(WAVEHDR* hdr, short* Output, float freq) { //
         waveOutWrite(hWaveOut, hdr, sizeof(WAVEHDR));
     }
 }
-// Draws any img that will fit the in the grid filled wtih 8x8 blocks
-// void Draw8x8(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
-//     unsigned char offy = 0;
-//     unsigned char offx = 0;
-//     for(unsigned char i = 0; i < 64; i++) {
-//         int pxPosY = offy + manualy;
-//         int pxPosX = manualx + offx;
-//         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
-//             int coord = ((pxPosY) * 288) + (pxPosX);
- 
-//             if(coord < (62208) && coord >= 0 && array8x8[i] > 0){
-//                 pixela[coord] = colorpalette[array8x8[i]];
-//             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
-//                 pixela[coord] = colorpalette[array8x8[0]];
-//             };
-//         }
-
-//         offx++;
-//         if(offx >= 8){
-//             offx = 0;
-//             offy++;
-//         };
-//     };
-// }
 
 void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
     unsigned char offy = 0;
@@ -1040,15 +1046,15 @@ void Draw(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsig
                 pixela[coord] = colorpalette[array8x8[i]];
             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
                 pixela[coord] = colorpalette[array8x8[0]];
-            };
+            }
         }
 
         offx++;
         if(offx >= wdth){
             offx = 0;
             offy++;
-        };
-    };
+        }
+    }
 }
 void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[], unsigned int wdth, unsigned int hght) {
     char offy = 0;
@@ -1064,130 +1070,17 @@ void DrawFlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[
                 pixela[coord] = colorpalette[array8x8[i]];
             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
                 pixela[coord] = colorpalette[array8x8[0]];
-            };
+            }
         }
 
         offx--;
         if(offx < 0){
             offx = wdth - 1;
             offy++;
-        };
-    };
+        }
+    }
 }
 
-// void Draw8x8FlippedX(int *pixela, int manualx, int manualy, unsigned char array8x8[]) {
-//     char offy = 0;
-//     char offx = 7;
-//     for(unsigned char i = 0; i < 64; i++) {
-//         int pxPosY = offy + manualy;
-//         int pxPosX = manualx + offx;
-//         if(pxPosX < 288 && pxPosX >= 0 && pxPosY < 216 && pxPosY >= 0){
-//             int coord = ((pxPosY) * 288) + (pxPosX);
- 
-//             if(coord < (62208) && coord >= 0 && array8x8[i] > 0){
-//                 pixela[coord] = colorpalette[array8x8[i]];
-//             }else if(((offy + manualy) * 288) + (manualx + offx) && array8x8[i] == 255){
-//                 pixela[coord] = colorpalette[array8x8[0]];
-//             };
-//         }
- 
-//         offx--;
-//         if(offx < 0){
-//             offx = 7;
-//             offy++;
-//         };
-//     };
-// }
-// This does not manage pengWCInd index for ptr This only draw plr
-// void DrawPlr(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
-//     unsigned char offx = 0;
-//     unsigned char offy = 0;
-//     if(player_state == 0) {
-//         //remeber Init, Condition, Increment
-//         for(unsigned char i = 0; i < 144; i++) {
-//             int pxPosY = offy + y;
-//             int pxPosX = offx + x;
-//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
-//                 int coord = ((pxPosY) * 288) + (pxPosX);
-//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
-//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-//                     pixela[coord] = colorpalette[0];
-//                 };
-//             };
-//             offx++;
-//             if(offx >= 9){
-//                 offx = 0;
-//                 offy++;
-//             };
-//         };
-//     };
-//     if(player_state > 0) {
-//         for(unsigned char i = 0; i < 256; i++) {
-//             int pxPosY = offy + y;
-//             int pxPosX = offx + x;
-//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216){
-//                 int coord = ((pxPosY) * 288) + (pxPosX);
-//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
-//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-//                     pixela[coord] = colorpalette[0];
-//                 };
-//             };
-//             offx++;
-//             if(offx >= 16){
-//                 offx = 0;
-//                 offy++;
-//             };
-//         };
-//     };
-// };
-// This draw flipped player
-//void DrawPlrFlip(int *pixela, int x, int y, unsigned char array16x9or16x16[]){
-//     char offx = 8;
-//     char offy = 0;
-//     if(player_state == 0) {
-//         //remeber Init, Condition, Increment
-//         for(unsigned char i = 0; i < 144; i++) {
-//             int pxPosY = offy + y;
-//             int pxPosX = x + offx;
-//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
-//                 int coord = ((pxPosY) * 288) + (pxPosX);
-//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] > 0){
-//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
-//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-//                     pixela[coord] = colorpalette[0];
-//                 };
-//             };
-//             offx--;
-//             if(offx < 0){
-//                 offx = 8;
-//                 offy++;
-//             };
-//         };
-//     };
-//     if(player_state > 0) {
-//         int offx = 15;
-//         int offy = 0;
-//         for(int i = 0; i < 256; i++) {
-//             int pxPosY = offy + y;
-//             int pxPosX = offx + x;
-//             if(pxPosX >= 0 && pxPosX < 288 && pxPosY >= 0 && pxPosY < 216 && offx >= 0){
-//                 int coord = ((pxPosY) * 288) + (pxPosX);
-//                 if(coord < (62208) && coord >= 0 && array16x9or16x16[i] != 0 && array16x9or16x16[i] != -1){
-//                     pixela[coord] = colorpalette[array16x9or16x16[i]];
-//                 } else if(array16x9or16x16[i] == 255 && array16x9or16x16[i] != 0){
-//                     pixela[coord] = colorpalette[0];
-//                 };
-//             };
-//             offx--;
-//             if(offx < 0){
-//                 offx = 15;
-//                 offy++;
-//             };
-//         };
-//     };
-// };
 //Collision Funciton
 int collision_detection(float px, float py, float pw, float ph, float wx, float wy, float ww, float wh){
     if(px < wx + ww && py < wy + wh && py + ph > wy && px + pw > wx){
@@ -1195,50 +1088,6 @@ int collision_detection(float px, float py, float pw, float ph, float wx, float 
     } return 0;
 }
 //Turns String into PNG & prints it
-
-
-// void ConvertNumToFont(int x, int y, int *pixela, char STRING[]) {
-//     int LENGTH = lstrlenA(STRING);
-//     int newx = x;
-//     int newy = y;
-//     for(int i = 0; i < LENGTH; i++){
-//         char current = STRING[i];
-//         unsigned char* ArrayNum = 0;
-//         if(current == '0'){
-//             ArrayNum = letterO;
-//         }
-//         else if(current == '1'){
-//             ArrayNum = number1;
-//         }
-//         else if(current == '2'){
-//             ArrayNum = number2;
-//         }
-//         else if(current == '3'){
-//             ArrayNum = number3;
-//         }
-//         else if(current == '4'){
-//             ArrayNum = number4;
-//         }
-//         else if(current == '5'){
-//             ArrayNum = number5;
-//         }
-//         else if(current == '6'){
-//             ArrayNum = number6;
-//         }
-//         else if(current == '7'){
-//             ArrayNum = number7;
-//         }
-//         else if(current == '8'){
-//             ArrayNum = number8;
-//         }
-//         else if(current == '9'){
-//             ArrayNum = number9;
-//         }
-//         else {ArrayNum = letterA;}
-//         Draw8x8(pixela, newx, newy, ArrayNum);
-//         newx += 8;
-//     }
-// }
 
 void WordToScreen(int *buffer, int x, int y, char string[]){
     int size = strlen(string);
@@ -1340,6 +1189,8 @@ char* NumToStr(char Buffer[], int Len, unsigned int NumberConvert){
     Buffer[Index + 1] = '\0';
     return Buffer;
 }
+
+
 //Start of Game & window
 // THIS IS THE START OF THE GAME NOT A ACCESSORY FUNC THE REAL DEAL
 LRESULT CALLBACK WindowProcessMessage(HWND, UINT, WPARAM, LPARAM);
@@ -1390,49 +1241,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     header.dwBufferLength = 882 * sizeof(short);
     waveOutPrepareHeader(hWaveOut, &header, sizeof(WAVEHDR));
 // Main Loop
-    //intro beep
-    //Beep(587, 600); Sleep(50);
-    //Beep(494, 600); Sleep(50);
-    //Beep(392, 600); Sleep(50);
-   // Beep(294, 1000); Sleep(150);
-    //Beep(330, 450); Sleep(30);
-    //Beep(370, 450); Sleep(30);
-    //Beep(392, 450); Sleep(30); 
-    //Beep(440, 400); Sleep(30); 
-    //Beep(494, 400); Sleep(30); 
-   // Beep(440, 1200);
-
-    //Early Variables
-    //Game Var
-    unsigned int CooldownJ2 = 0;
-    playerY = 20;
-    unsigned char anim_cooldown = 30;
-    unsigned char slowdown_wait = 150;
-    unsigned int last_tick = 0;
-    int random = 0;
-    unsigned int lastrandomcheck = 0;
-    int last_pixelmove = 0;
-    float current_pixelmove = 0;
-    unsigned char anim_cooldown_run = 20;
-    unsigned int last_check_time = GetTickCount64();
-    int SpawnMaxLimit = 8000;
-    unsigned char can_moveX = 1;
-    unsigned char playerW = 0;
-    unsigned char playerH = 16;
-    unsigned char OnGround = 0;
-    int CollisionBefore = 0;
-    unsigned int CooldownSlide = 0;
-    enemyvel = 3;
-    Predator_dist = -1000;
- 
-    //Start Var
-    unsigned char start_button_var = 0;
-    unsigned int lc_start_button = 0;
-    unsigned int ml_start_button = 150;
-    unsigned int ArrowY = 0;
-    unsigned int SettingY = 0;
-    unsigned int QuitY = 0;
-    unsigned char settingSelect = 0;
  
     //Setting things up
     for(unsigned char i = 0; i < WallNum; i++){
@@ -1452,16 +1260,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     waveOutWrite(hWaveOut, &headerA, sizeof(WAVEHDR));
     waveOutWrite(hWaveOut, &headerB, sizeof(WAVEHDR));
     waveOutWrite(hWaveOut, &headerC, sizeof(WAVEHDR));
- 
- 
-    //Actaull LooP
 
     unsigned int SettingNX = my_round((288 - (8 * 8)) / 2);
-    int LastTickV = GetTickCount64();
     unsigned char maxTickV = 250;
 
     unsigned int MaxBulletSpawn = 2000;
-    int lastBulletSpawn = LastTickV;
     unsigned char ShowStartButt = 0;
     unsigned int LastShownButt = 0;
     unsigned int HISCORE1 = 0;
@@ -1480,32 +1283,46 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     unsigned char KeyBoardIndex = 0;
     unsigned char CurrentOverwriteInput = 0;
     unsigned char Collision = 0;
+        
+    enemyvel = 3;
+    Predator_dist = -1000;
+
+
+    //Windows Func Related Variables
+    unsigned int last_check_time = GetTickCount64();
+    int LastTickV = GetTickCount64();
+    int lastBulletSpawn = LastTickV;
+    playerY = 20;
+    // Related Rendering Variables
+    int GameStartY = GameOverY - 50;
+    int GameStartGameY = 112;
+
+// Actual Loop
 
     while(playing == 1){
         MSG message;
         while(PeekMessage(&message, NULL, 0, 0, PM_REMOVE)){
             TranslateMessage(&message);
             DispatchMessage(&message);
-        };
+        }
         WaitForSingleObject(hAudioEvent, INFINITE);// Frame Cap
         Sound_Inc = freq / 44100;
         if(GroundOffset <= -288){
             GroundOffset = 0;
         }
+        // Variable Resets across all games
         can_moveX = 1;
-        int GameStartY = GameOverY - 50;
-        int GameStartGameY = 112;
         SettingY = 120;
         QuitY = 128;
         int GameStartGameX = Middlex - 32;
-        jumpcooldown_current = GetTickCount64();
+        CurrentTime = GetTickCount64();
 
             //Infamous Quit Q Fass Quit
         if((GetAsyncKeyState(0x51) & 0x8000)){
             playing = 0;
         }
         if(GameState == 1){
-    //Resetting variables
+    //Resetting variables pt 2
             CollisionBefore = 0;
             Collision = 0;
             playerWalk = 0;
@@ -1530,66 +1347,62 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             }
  
     //Plr Movement
-        // Sliding
-            // if((GetAsyncKeyState(0x53) & 0x8000) && OnGround && jumpcooldown_current - CooldownSlide >= 150) {
-            //     player_state = 1;
-            //     playerXvel = 0;
-            //     CooldownSlide = GetTickCount();
-            // }
             if((GetAsyncKeyState(0x57) & 0x8000) && OnGround) {
                 player_state = 0;
             }
         //Jumping
-            if((GetAsyncKeyState(VK_SPACE) & 0x8000) && jumpcooldown_current - jumpcooldown_lastjump >= 150 && OnGround && !player_state) {
+            if((GetAsyncKeyState(VK_SPACE) & 0x8000) && CurrentTime - jumpcooldown_lastjump >= 150 && OnGround && !player_state) {
                 playerYvel = -3.1415;
-                jumpcooldown_lastjump = jumpcooldown_current;
+                jumpcooldown_lastjump = CurrentTime;
                 pengWCInd = pengLength - 1;
                 OnGround = 0;
                 JumpPlay = 1;
-                JumpPlayLast = jumpcooldown_current;
-            };
+                JumpPlayLast = CurrentTime;
+            }
             //Running
-            if((GetAsyncKeyState(VK_LSHIFT) & 0x8000) && (GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && OnGround && !player_state) {
+            if((GetAsyncKeyState(VK_LSHIFT) & 0x8000) && (GetAsyncKeyState(0x44) & 0x8000) && CurrentTime - penganim_timer >= 30 && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = jumpcooldown_current;
+                penganim_timer = CurrentTime;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
-                };
+                }
  
                 playerRun = 1;
                 playerXacc += 5;
             }
         //Going Backwards
-            if((GetAsyncKeyState(0x41) & 0x8000) && jumpcooldown_current - penganim_timer >= 30 && !playerRun && OnGround && !player_state) {
+            if((GetAsyncKeyState(0x41) & 0x8000) && CurrentTime - penganim_timer >= 30 && !playerRun && OnGround && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = jumpcooldown_current;
+                penganim_timer = CurrentTime;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
-                };
+                }
  
                 playerXacc = -4;
                 playerWalk = 1;
                 backward = 1;
-                penganim_timer = jumpcooldown_current;
+                penganim_timer = CurrentTime;
             }
             // Walking
-            if((GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - penganim_timer >= anim_cooldown && !backward && !playerRun && OnGround  && !player_state) {
+            if((GetAsyncKeyState(0x44) & 0x8000) && CurrentTime - penganim_timer >= anim_cooldown && !backward && !playerRun && OnGround  && !player_state) {
                 pengWCInd += 1;
-                penganim_timer = jumpcooldown_current;
+                penganim_timer = CurrentTime;
                 if(pengWCInd >= pengLength - 2) {
                     pengWCInd = 0;
-                };
+                }
  
                 playerXacc = 4;
                 playerWalk = 1;
                 forward = 1;
-                penganim_timer = jumpcooldown_current;
+                penganim_timer = CurrentTime;
             }
-            if(jumpcooldown_current - penganim_timer >= (anim_cooldown + 5) && playerYvel < 0) {
+        // Animation for Plr Char
+            if(CurrentTime - penganim_timer >= (anim_cooldown + 5) && playerYvel < 0) {
                 pengWCInd = pengLength - 1;
-            } else if(jumpcooldown_current - penganim_timer >= (anim_cooldown + 5)){
+            } else if(CurrentTime - penganim_timer >= (anim_cooldown + 5)){
                 pengWCInd = 0;
-            };
+            }
+        // Cut Feature I Would remove it but I thought showing that  there was thought behind everything would show more knowledge
             if(player_state){
                 playerXacc = 2.5;
                 playerXvel += playerXacc;
@@ -1604,14 +1417,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             } else if(playerXvel <= -(snow_friction) && !falling) {
                 playerXvel += (snow_friction);
             }
-        //Absolute MAximum if walking fails
+        //Absolute MAximum if walking fails Capping off Velocity
             if(playerXvel >= playermaxvel  && !player_state) {
                 playerXvel = playermaxvel;
             }
             if(playerXvel <= -(playermaxvel) && !player_state) {
                 playerXvel = -(playermaxvel);
             }
- 
+            
+        // Capping off acceleration
             if(playerXacc >= playermaxacc && !player_state) {
                 playerXacc = playermaxacc;
             }
@@ -1620,12 +1434,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             }
  
             //Walking max
+            //Capping off Player walk velocity
             if(playerXvel >= playermaxvelWalk && playerWalk == 1) {
                 playerXvel = playermaxvelWalk;
             }
             if(playerXacc >= playermaxaccWalk && playerWalk == 1) {
                 playerXacc = playermaxaccWalk;
             }
+            // CApping off walking acceleration
             if(playerXvel <= -(playermaxvelWalk) && playerWalk == 1) {
                 playerXvel = -(playermaxvelWalk);
             }
@@ -1640,51 +1456,53 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
     //Checking for spawning of walls
  
         //Ground
+            // Changing the world from the plrs perspective
             GroundOffset -= playerXvel;
         //Total Disance Traveled
             current_pixelmove += playerXvel;
             if(current_pixelmove < 0) {current_pixelmove = 0;}
 
-        unsigned char randomBi = jumpcooldown_current % 4;
+        // Random Var for random Spawns(Technically not Random also pretty easy to guess)
+        unsigned char randomBi = CurrentTime % 4;// Better Solution is to make an algorithim to obscure it or possibly use unitialized mem for "True" Randomness Since Random technically only occurs when you don't know every thing. This could work by using unsigned char to  garuntee a pos and a val between 0-255. although its very likely to be 0 and shouldn't be counted on
         unsigned char ablespawn = 0;
         unsigned char clear_space = 1;
 
         //Bullet
-        if(jumpcooldown_current - lastBulletSpawn > 1000){
+        if(CurrentTime - lastBulletSpawn > 1000){
             ablespawn = 1;
         }
         
         if(randomBi < 2){
             ablespawn = 0;
         }
-        
+        // Spawning Logic
         for (unsigned char i = 0; i < bulletNum; i++){
             if (bulletsd[i].active == 1 && bulletsd[i].x >= 0 && bulletsd[i].x < 4){
                 clear_space = 0;
                 break;
             }
-
+            // Bullet Spawning Logic
             if(bulletsd[i].active == 0 && clear_space == 1 && ablespawn == 1){//&& clear_space == 1 && ablespawn == 1
                 bulletsd[i].active = 1; clear_space = 0; ablespawn = 0;
-                bulletsd[i].y = 170 - (jumpcooldown_current % 40);
+                bulletsd[i].y = 170 - (CurrentTime % 40);
                 bulletsd[i].x = 0;
                 bulletsd[i].yVel = 0;
-                lastBulletSpawn = jumpcooldown_current;
+                lastBulletSpawn = CurrentTime;
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
                 break;
             }
         }
         
 
-        //Wall Stuff
-            randomBi = jumpcooldown_current % 8;
+        //Wall logic
+            randomBi = CurrentTime % 8;
             
             ablespawn = 1;
             clear_space = 1;
             
         //Wall Loops
- 
+            // Wall Spawning logic This is older code
             for(int i = 0; i < WallNum; i++) {
                 if(walls[i].x >= (280 + current_pixelmove) && walls[i].active) {
                     clear_space = 0;
@@ -1693,19 +1511,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     ablespawn = 0;
                 }   
             }
-            if(jumpcooldown_current - last_check_time <= SpawnMaxLimit) {
+            if(CurrentTime - last_check_time <= SpawnMaxLimit) {
                 ablespawn = 0;
             }
-        //Spawining first active
+        //Spawining logic Wall
             if(randomBi >= 6) {
-                ablespawn = 0;
+                ablespawn = 0; // Removing Able Spawn
             }
+            // Spawn logic
             for(int i = 0; i < WallNum; i++) {
                 if(!walls[i].active && ablespawn && clear_space) {
                     walls[i].x = current_pixelmove + 288;
                     walls[i].y = 168;
                     walls[i].active = 1;
-                    last_check_time = jumpcooldown_current;
+                    last_check_time = CurrentTime;
                     SpawnMaxLimit -= 50;
                     break;
                 }
@@ -1722,33 +1541,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             Predator_dist += enemyvel;
             Predator_dist -= playerXvel;
     //PlayerSlowdown
-            if(!playerWalk && !playerRun && playerXvel > 0 && jumpcooldown_current - last_tick > slowdown_wait) {
+            if(!playerWalk && !playerRun && playerXvel > 0 && CurrentTime - last_tick > slowdown_wait) {
                 playerXvel -= 0.6;
                 if(playerXvel < 0) {
                     playerXvel = 0;
                 }
-                last_tick = jumpcooldown_current;
+                last_tick = CurrentTime;
             }
-            if(!playerWalk && !playerRun && playerXvel < 0 && jumpcooldown_current - last_tick > slowdown_wait) {
+            if(!playerWalk && !playerRun && playerXvel < 0 && CurrentTime - last_tick > slowdown_wait) {
                 playerXvel += 0.6;
                 if(playerXvel > 0) {
                     playerXvel = 0;
                 }
-                last_tick = jumpcooldown_current;
+                last_tick = CurrentTime;
             }
  
             if(playerY >= 168){
-                if(falling){jumpcooldown_lastjump = jumpcooldown_current;}
+                if(falling){jumpcooldown_lastjump = CurrentTime;}
                 playerY = 168;
                 playerYvel = 0;
                 falling = 0;
-            };
+            }
             if(Predator_dist >= 5) {
                 GameState = 2;
                 ScoreCheck = 0;
             }
 //Collisions
-            for(int i = 0; i < WallNum; i++) {
+            for(int i = 0; i < WallNum; i++) { // Wall Collison on side vs side
                 if(collision_detection(playerX + 1, playerY + 1, playerW - 1, playerH - 2, (walls[i].x - current_pixelmove), 168, 8, 16) && !player_state) {
                     if(walls[i].active){
                         if(playerXvel > 0) {
@@ -1762,8 +1581,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                         }
                     }
                 }
-                if(collision_detection(playerX + 1, playerY, playerW - 2, playerH, (walls[i].x - current_pixelmove), 168, 8, 16) && falling && !player_state) {
-                    if(walls[i].active){
+                if(collision_detection(playerX + 1, playerY, playerW - 2, playerH, (walls[i].x - current_pixelmove), 168, 8, 16) && falling && !player_state) { // On Top Wall Collison
+                    if(walls[i].active){ //
                         if(playerYvel > 0) {
                             playerY = 168 - playerH;
                             playerYvel = 0;
@@ -1773,17 +1592,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                         }
                     }
                 }
-                if(collision_detection(playerX, playerY, playerW, playerH, (walls[i].x - current_pixelmove), 168, 8, 16) && player_state) {
-                    GameState = 2;   // Was 1
-                    ScoreCheck = 0;
-                    player_state = 0;
-                }
-                if(!collision_detection(playerX, playerY, playerW, playerH, (walls[i].x - current_pixelmove), 168, 8, 16) && !CollisionBefore && !player_state) {
-                    OnGround = 0;
-                }
                 FinalScore = Unsigned_round(current_pixelmove);
             }
-            for(unsigned char i = 0; i < bulletNum; i++){
+            //Bullet Logic
+            for(unsigned char i = 0; i < bulletNum; i++){ // Active logic
 
                 if(bulletsd[i].active == 1){
                     if(!Collision){
@@ -1799,6 +1611,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                         bulletsd[i].active = 0;
                     }
 
+                    // Bullet Collison
                     if(collision_detection(playerX + 1, playerY, playerW - 2, playerH, bulletsd[i].x, bulletsd[i].y, 4, 3)){
                         GameState = 2;
                         ScoreCheck = 0;
@@ -1810,32 +1623,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
         }
 
-        if(JumpPlay && jumpcooldown_current - JumpPlayLast >= 150){
+        if(JumpPlay && CurrentTime - JumpPlayLast >= 150){ // Jump Input
             JumpPlay = 0;
             phasessq2 = 0;
         }
+        // UPD plr rendering Pos
         int PplayerX = (int)(playerX + 0.5);
         int PplayerY = (int)(playerY + 0.5);
 // Menu
         if(GameState == 0) {
-            if((GetAsyncKeyState(0x57) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = jumpcooldown_current;
+            if((GetAsyncKeyState(0x57) & 0x8000) && CurrentTime - lc_start_button >= ml_start_button){
+                //Movement Control Down 's'
+                lc_start_button = CurrentTime;
                 start_button_var--;
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-            if((GetAsyncKeyState(0x53) & 0x8000) && jumpcooldown_current - lc_start_button >= ml_start_button){
-                lc_start_button = jumpcooldown_current;
+            if((GetAsyncKeyState(0x53) & 0x8000) && CurrentTime - lc_start_button >= ml_start_button){
+                //Movement control up 'w'
+                lc_start_button = CurrentTime;
                 start_button_var++;
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
+            //Checking if its too high or too low a value
             if(start_button_var > 3) {
                 start_button_var = 1;
             } 
             else if(start_button_var < 1) {
                 start_button_var = 3;
             }
+            //Correcting ArrowY
             if(start_button_var == 1) {
                 ArrowY = GameStartGameY;
             }
@@ -1846,11 +1664,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 ArrowY = QuitY;
             }
  
+        // Confirming with Enter
             if((GetAsyncKeyState(0x0D) & 0x8000)){
-                if(ArrowY == GameStartGameY && jumpcooldown_current - lc_start_button >= ml_start_button) {
-                    GameState = 4;
+                // Starting Game
+                if(ArrowY == GameStartGameY && CurrentTime - lc_start_button >= ml_start_button) {
+                    GameState = 4; //Play Start Game Anim
                     StartButtFlashNum = 0;
-                    lc_start_button = jumpcooldown_current;
+                    lc_start_button = CurrentTime;
                     player_state = 0;
                     for(unsigned char i = 0; i < WallNum; i++){
                         walls[i].x = 0;
@@ -1862,19 +1682,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                         bulletsd[i].y = 0;
                         bulletsd[i].active = 0;
                     }
-                    lastBulletSpawn = jumpcooldown_current;
+                    lastBulletSpawn = CurrentTime;
                     Predator_dist = -1000;
                     current_pixelmove = 0;
                     SpawnMaxLimit = 8000;
                 }
-                if(ArrowY == SettingY && jumpcooldown_current - lc_start_button >= ml_start_button){
+                // Enter Settings
+                if(ArrowY == SettingY && CurrentTime - lc_start_button >= ml_start_button){
                     lc_start_button = GetTickCount64();
                     GameState = 3;
                     inputPlay = 1;
-                    lastIPlay = jumpcooldown_current;
+                    lastIPlay = CurrentTime;
                 }
-                if(ArrowY == QuitY && jumpcooldown_current - lc_start_button >= ml_start_button) {
-                    lc_start_button = jumpcooldown_current;
+                //Quit Game
+                if(ArrowY == QuitY && CurrentTime - lc_start_button >= ml_start_button) {
+                    lc_start_button = CurrentTime;
                     playing = 0;
                 }
             }
@@ -1885,6 +1707,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
             //SCORE CHECK
             if(!ScoreCheck){
+                // Getting Top Score
                 if(FinalScore > HISCORE1){
                     OverWriteRank = 1;
 
@@ -1898,6 +1721,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     HISCORE2 = HISCORE1;
                     HISCORE1 = FinalScore;
                 }
+                // Getting Second Top Score
                 else if (FinalScore > HISCORE2 && FinalScore < HISCORE1 + 1){
                     OverWriteRank = 2;
 
@@ -1907,10 +1731,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     HISCORE3 = HISCORE2;
                     HISCORE2 = FinalScore;
                 }
+                // Getting Third Top Score
                 else if(FinalScore > HISCORE3 && FinalScore < HISCORE2 + 1){
                     OverWriteRank = 3;
                     HISCORE3 = FinalScore;
                 }
+                // No HISCORE
                 else if(FinalScore < HISCORE3){
                     OverWriteRank = 0;
                 }
@@ -1919,29 +1745,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 InputRank[0] = 'A';
                 InputRank[1] = InputRank[0];
             }
-
-            if((GetAsyncKeyState('A') & 0x8000) && jumpcooldown_current - LastTickV >= 250) {
+            // Moving the select Icon left 
+            if((GetAsyncKeyState('A') & 0x8000) && CurrentTime - LastTickV >= 250) {
                 if(KeyBoardIndex == 0){
                     KeyBoardIndex = 25;
                 }
                 else{
                     KeyBoardIndex--;
                 }
-                LastTickV = jumpcooldown_current;
+                LastTickV = CurrentTime;
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-            if((GetAsyncKeyState('D') & 0x8000) && jumpcooldown_current - LastTickV >= 250){
+            // Move KeyBoard Select Icon Right
+            if((GetAsyncKeyState('D') & 0x8000) && CurrentTime - LastTickV >= 250){
                 KeyBoardIndex++;
-                LastTickV = jumpcooldown_current;
+                LastTickV = CurrentTime;
                 if(KeyBoardIndex >= 26){
                     KeyBoardIndex = 0;
                 }
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-
-            if(((GetAsyncKeyState(0x20) & 0x8000) && jumpcooldown_current - inputPlay2Last >= 300)){
+            // using Space to confirm letter
+            if(((GetAsyncKeyState(0x20) & 0x8000) && CurrentTime - inputPlay2Last >= 300)){
                 if(!CurrentOverwriteInput){
                     InputRank[CurrentOverwriteInput] = KeyBoardStr[KeyBoardIndex];
                     CurrentOverwriteInput = 1;
@@ -1951,9 +1778,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     CurrentOverwriteInput = 0;
                 }
                 inputPlay2 = 1;
-                inputPlay2Last = jumpcooldown_current;
+                inputPlay2Last = CurrentTime;
             }
-
+            // Enter key to move on and finalizing new leader board
             if(GetAsyncKeyState(0x0D) & 0x8000){
                 CurrentOverwriteInput = 0;
 
@@ -1971,13 +1798,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                 }
 
                 GameState = 0;
-                LastTickV = jumpcooldown_current;
-                lc_start_button = jumpcooldown_current;
+                LastTickV = CurrentTime;
+                lc_start_button = CurrentTime;
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-
-            if(jumpcooldown_current - inputPlay2Last >= 150){
+            // Playing a Input enter sound Low Freq
+            if(CurrentTime - inputPlay2Last >= 150){
                 inputPlay2 = 0;
             }
 
@@ -1985,36 +1812,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
     // INIT WRITE SYS
 
+        // Settings
         if(GameState == 3){
-            if((GetAsyncKeyState(0x44) & 0x8000) && jumpcooldown_current - LastTickV >= maxTickV){
-                LastTickV = jumpcooldown_current;
+            // going to right 1 | moving select
+            if((GetAsyncKeyState(0x44) & 0x8000) && CurrentTime - LastTickV >= maxTickV){
+                LastTickV = CurrentTime;
                 settingSelect++;
                 if(settingSelect > 3){
                     settingSelect = 1;
                 }
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-            if((GetAsyncKeyState(0x41) & 0x8000) && jumpcooldown_current - LastTickV >= maxTickV){
-                LastTickV = jumpcooldown_current;
+            // Going to left 1 moving select
+            if((GetAsyncKeyState(0x41) & 0x8000) && CurrentTime - LastTickV >= maxTickV){
+                LastTickV = CurrentTime;
                 settingSelect--;
                 if(settingSelect < 1){
                     settingSelect = 3;
                 }
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
             }
-            if(GetAsyncKeyState(0x0D) & 0x8000 && jumpcooldown_current - lc_start_button >= maxTickV){
-                lc_start_button = jumpcooldown_current;
+            // Pressing Enter Key | Basically confirming 1 of the choices spefifically the back button
+            if(GetAsyncKeyState(0x0D) & 0x8000 && CurrentTime - lc_start_button >= maxTickV){
+                lc_start_button = CurrentTime;
                 if(settingSelect == 1){
                     GameState = 0;
                 }
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
                 
             }
-
-            if(GetAsyncKeyState(0x0D) & 0x8000 && jumpcooldown_current - lc_start_button >= 75){
+            // Confirming another choice spefifically the audio level
+            if(GetAsyncKeyState(0x0D) & 0x8000 && CurrentTime - lc_start_button >= 75){
                 if( settingSelect == 2){
                     VolumeAmount -= 0.05;
                     if(VolumeAmount < 0){
@@ -2029,32 +1860,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     }
                 }
                 inputPlay = 1;
-                lastIPlay = jumpcooldown_current;
+                lastIPlay = CurrentTime;
                 
             }
         }
-
+// Animation Page
         if(GameState == 4){
-            if(jumpcooldown_current - LastShownButt >= 100){
+            // Flipping Digits on and off and playing a sound if one of them Is on
+            // Flipping the digits
+            if(CurrentTime - LastShownButt >= 100){
                 if(ShowStartButt == 1){
                     ShowStartButt = 0;
-                    LastShownButt = jumpcooldown_current;
+                    LastShownButt = CurrentTime;
                     phasessq2 = 0;
                     inputPlay2 = 1;
                 }
                 else if(ShowStartButt == 0){
                     ShowStartButt = 1;
                     StartButtFlashNum++;
-                    LastShownButt = jumpcooldown_current;
+                    LastShownButt = CurrentTime;
                     inputPlay2 = 0;
                 }
             }
+            // Load Game upon Completion of 5
             if(StartButtFlashNum >= 5){
                 StartButtFlashNum = 0;
                 GameState = 1;
                 ShowStartButt = 0;
                 inputPlay2 = 0;
-                lc_start_button = jumpcooldown_current;
+                lc_start_button = CurrentTime;
                 player_state = 0;
                 for(unsigned char i = 0; i < WallNum; i++){
                     walls[i].x = 0;
@@ -2066,7 +1900,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     bulletsd[i].y = 0;
                     bulletsd[i].active = 0;
                 }
-                lastBulletSpawn = jumpcooldown_current;
+                lastBulletSpawn = CurrentTime;
                 Predator_dist = -1000;
                 current_pixelmove = 0;
                 SpawnMaxLimit = 8000;
@@ -2075,7 +1909,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         }
 
         if(inputPlay){
-            if(jumpcooldown_current - lastIPlay > maxIplay){
+            // Playing input this is a "Global" input among all Game States
+            if(CurrentTime - lastIPlay > maxIplay){
                 inputPlay = 0;
                 phasessq2 = 0;
             }
@@ -2089,8 +1924,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
         // Screen Reset
         for(int i = 0; i < (bW * bH); i++ ) {
             pixel[i] = colorpalette[1]; //1 = Blue. Blue = Sky = Reset
-        };
+        }
     //Menu
+        //Render Meny
         if(GameState == 0) {
 
             char StringB[6];
@@ -2098,38 +1934,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             unsigned int HiScoreLblX = 72;
             unsigned int InitialsX = HiScoreLblX + (8 * 10);
 
-            
+            // Rendering Hiscore labels
             WordToScreen(pixel, HiScoreLblX, QuitY + 16, "HI-SCORES");
             WordToScreen(pixel, HiScoreLblX + (8 * 10), QuitY + 16, "INITALS");
-
+            // HiScore 1
             NumToStr(StringB, 6, (HISCORE1));
             WordToScreen(pixel, HiScoreLblX, QuitY + 24, StringB);
-
+            //Hiscore 2
             NumToStr(StringB, 6, (HISCORE2));
             WordToScreen(pixel, HiScoreLblX, QuitY + 32, StringB);
-
+            // Hiscore 3
             NumToStr(StringB, 6, (HISCORE3));
             WordToScreen(pixel, HiScoreLblX, QuitY + 40, StringB);
-
+            //Initals 1
             WordToScreen(pixel, InitialsX, QuitY + 24, Rank1);
-
+            //Initials 2
             WordToScreen(pixel, InitialsX, QuitY + 32, Rank2);
-
+            // initials 3
             WordToScreen(pixel, InitialsX, QuitY + 40, Rank3);
- 
+            // TITLE
             WordToScreen(pixel, 100, GameStartY, "PENGUIN RUN");
 
-
+            // START GAME BUTTON
             WordToScreen(pixel, TitleNameX, GameStartGameY, "START GAME");
- 
+            // START GAME BUTTON
             WordToScreen(pixel, TitleNameX, SettingY, "Setting");
- 
+            // START GAME BUTTON
             WordToScreen(pixel, TitleNameX, QuitY, "QUIT");
- 
+            // Draw ARROW
             Draw(pixel, TitleNameX - 10, ArrowY, Arrow, 8, 8);
-
-            WordToScreen(pixel, 152, 208, "\\2026 Beanie Code");
-        };
+            // Credit
+            WordToScreen(pixel, 152, 208, "\\2026 Beanie Tech"); // User I go by "\\" is used as the (c) symbol
+        }
     //Game Rendering
         if(GameState == 1) {
             int roundedcurrent_pixelmove = my_round(current_pixelmove);
@@ -2137,13 +1973,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             for(int i = 0; i < 37; i++){
                 int GroundX = i * 8;
                 GroundX -= GroundOffset;
-                Draw(pixel, GroundX, 184, SnowIceTile, 8, 8);
-                Draw(pixel, GroundX, 192, SnowCoveredDirt, 8, 8);
-                Draw(pixel, GroundX, 200, DirtUpper, 8, 8);
-                Draw(pixel, GroundX, 208, DirtLower, 8, 8);
+                // Drawing the ground
+                Draw(pixel, GroundX, 184, SnowIceTile, 8, 8); // top
+                Draw(pixel, GroundX, 192, SnowCoveredDirt, 8, 8); // 2nd lyr
+                Draw(pixel, GroundX, 200, DirtUpper, 8, 8); // 3rd lyr
+                Draw(pixel, GroundX, 208, DirtLower, 8, 8); // 4th lyr
             }
-        //Walls
-            for(int i = 0; i < WallNum; i++) {
+        //Structs Render
+            // Rendering Wall
+            for(int i = 0; i < WallNum; i++) { 
                 if(walls[i].active) {
                     int wallx = (int)((walls[i].x - roundedcurrent_pixelmove) + 0.5);
                     int wally = (int)(walls[i].y + 0.5);
@@ -2151,17 +1989,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
                     Draw(pixel, wallx, (wally + 8), IceWallLower, 8, 8);
                 }
             }
-
+            //Bullet Render
             for(int i = 0; i < bulletNum; i++){
                 if(bulletsd[i].active == 1){
                     int bullety = my_round(bulletsd[i].y);
                     int bulletx = my_round(bulletsd[i].x);
 
                     Draw(pixel, bulletx, bullety, Bullet, 8, 8);
-                    //Draw8x8(pixel, bulletx, bullety, IceWallLower);
                 }
             }
-
+            // Game Render
             char StringB[7];
             unsigned int newVal = (current_pixelmove < 0) ? -current_pixelmove : current_pixelmove;
             NumToStr(StringB, 7, (unsigned int)(newVal));
@@ -2174,13 +2011,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
             NumToStr(StringB, 7, (unsigned int)(newVal));
             WordToScreen(pixel, 112, 8, StringB);
- 
-        //Player Always on top
-    //Player
+
+    //Player render
             if (player_state == 0 && pengWCInd < pengLength){
-                if(playerXvel < 0){DrawFlippedX(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);}
-                else {Draw(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);}
-            }else if(player_state > 0) {Draw(pixel, PplayerX, PplayerY, Efox, 16, 9);}
+                if(playerXvel < 0){DrawFlippedX(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);} // Flipped
+                else {Draw(pixel, PplayerX, PplayerY, pengWalkCycle[pengWCInd], 9, 16);} // Non Flipped
+            }
         }
  
     // GameOver
@@ -2188,17 +2024,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             Draw(pixel, GameOverStartx, GameOverY, letterG, 8, 8); 
             Draw(pixel, GameOverStartx + 8, GameOverY, letterA, 8, 8);
             Draw(pixel, GameOverStartx + 16, GameOverY, letterM, 8, 8);
-            Draw(pixel, GameOverStartx + 23, GameOverY, letterE, 8, 8);
+            Draw(pixel, GameOverStartx + 23, GameOverY, letterE, 8, 8); // Manual Because for better looking letter spacing
             Draw(pixel, GameOverStartx + 39, GameOverY, letterO, 8, 8);
             Draw(pixel, GameOverStartx + 47, GameOverY, letterV, 8, 8);
             Draw(pixel, GameOverStartx + 55, GameOverY, letterE, 8, 8);
             Draw(pixel, GameOverStartx + 63, GameOverY, letterR, 8, 8);
-
+            // GAme OVer Render
             char StringB[6];
             int newVal = (current_pixelmove < 0) ? -current_pixelmove : current_pixelmove;
             NumToStr(StringB, 6, (int)(newVal));
             WordToScreen(pixel, 148, 80, StringB);
             WordToScreen(pixel, 92 + 8, 80, "Score");
+
+            // Important Info
 
             WordToScreen(pixel, (288 - (17 * 8)) / 2, GameOverY + 16, "Retry Press Enter");
 
@@ -2210,147 +2048,134 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
 
             CurrKeyBoardX = (KeyBoardIndex * 8) + KeyBoardX;
             Draw(pixel, CurrKeyBoardX, 184, SelectBox, 8, 8);
-        };
+        }
 
     // Settings
         if(GameState == 3){
+            // Setting Render
             DrawFlippedX(pixel, 0, 0, Arrow, 8, 8); // Back Arrow
-            WordToScreen(pixel, SettingNX, 0, "Settings");
-            DrawFlippedX(pixel, SettingNX - 16, 112, Arrow, 8, 8);
-            Draw(pixel, SettingNX + 8 + (8*8), 112, Arrow, 8, 8);
-            WordToScreen(pixel, my_round((288 - (8*6)) / 2), 96, "Volume");
+            WordToScreen(pixel, SettingNX, 0, "Settings"); // Top Name
+            DrawFlippedX(pixel, SettingNX - 16, 112, Arrow, 8, 8); // Lower Volume
+            Draw(pixel, SettingNX + 8 + (8*8), 112, Arrow, 8, 8); // More Volume
+            WordToScreen(pixel, my_round((288 - (8*6)) / 2), 96, "Volume"); // Name of setting
             if(settingSelect == 1){
-                Draw(pixel, 0, 0, SelectBox, 8, 8);
+                Draw(pixel, 0, 0, SelectBox, 8, 8); // Select box
             }
             else if(settingSelect == 2){
-                Draw(pixel, SettingNX - 16, 112, SelectBox, 8, 8);
+                Draw(pixel, SettingNX - 16, 112, SelectBox, 8, 8); // Land on Decreased Volume
             }
             else if(settingSelect == 3){
-                Draw(pixel, SettingNX + 8 + (8*8), 112, SelectBox, 8, 8);
+                Draw(pixel, SettingNX + 8 + (8*8), 112, SelectBox, 8, 8); // Select More Volume
             }
-            char StrBuffB[5];
-            int PrintVal = my_round(VolumeAmount * 100);
-            NumToStr(StrBuffB, 5, PrintVal);
-            WordToScreen(pixel, ((288 - (8*3)) / 2), 112, StrBuffB);
+            char StrBuffB[5]; // String Buffer
+            int PrintVal = my_round(VolumeAmount * 100); // print volume
+            NumToStr(StrBuffB, 5, PrintVal); // Fill Buffer
+            WordToScreen(pixel, ((288 - (8*3)) / 2), 112, StrBuffB); // Print Buffer
 
         }
         if(GameState == 4){
-
-            char StrBuffB[25];
+            // Anim Render
+            char StrBuffB[25]; // 
+// Debug Render
             NumToStr(StrBuffB, 25, (unsigned int)inputPlay2);
             WordToScreen(pixel, 0, 0, StrBuffB);
 
-            NumToStr(StrBuffB, 25, (unsigned int)ShowStartButt);
+            NumToStr(StrBuffB, 25, (unsigned int)ShowStartButt); 
             WordToScreen(pixel, 0, 8, StrBuffB);
 
             NumToStr(StrBuffB, 25, (unsigned int)LastShownButt);
             WordToScreen(pixel, 0, 16, StrBuffB);
 
-            NumToStr(StrBuffB, 25, (unsigned int)jumpcooldown_current);
+            NumToStr(StrBuffB, 25, (unsigned int)CurrentTime);
             WordToScreen(pixel, 0, 24, StrBuffB);
 
-            NumToStr(StrBuffB, 25, (unsigned int)(jumpcooldown_current - LastShownButt));
+            NumToStr(StrBuffB, 25, (unsigned int)(CurrentTime - LastShownButt));
             WordToScreen(pixel, 0, 32, StrBuffB);
+        // End of Debug Render
 
             char StringB[6];
-            //unsigned int HiScoreLblX = TitleNameX - (5 * 8);
             unsigned int HiScoreLblX = 72;
             unsigned int InitialsX = HiScoreLblX + (8 * 10);
 
             
+            // Rendering Hiscore labels
             WordToScreen(pixel, HiScoreLblX, QuitY + 16, "HI-SCORES");
             WordToScreen(pixel, HiScoreLblX + (8 * 10), QuitY + 16, "INITALS");
-
+            // HiScore 1
             NumToStr(StringB, 6, (HISCORE1));
             WordToScreen(pixel, HiScoreLblX, QuitY + 24, StringB);
-
+            //Hiscore 2
             NumToStr(StringB, 6, (HISCORE2));
             WordToScreen(pixel, HiScoreLblX, QuitY + 32, StringB);
-
+            // Hiscore 3
             NumToStr(StringB, 6, (HISCORE3));
             WordToScreen(pixel, HiScoreLblX, QuitY + 40, StringB);
-
+            //Initals 1
             WordToScreen(pixel, InitialsX, QuitY + 24, Rank1);
-
+            //Initials 2
             WordToScreen(pixel, InitialsX, QuitY + 32, Rank2);
-
+            // initials 3
             WordToScreen(pixel, InitialsX, QuitY + 40, Rank3);
- 
+            // TITLE
             WordToScreen(pixel, 100, GameStartY, "PENGUIN RUN");
 
-            if(ShowStartButt){
+            if(ShowStartButt){ // if we allowed to show start show start
 
                 WordToScreen(pixel, TitleNameX, GameStartGameY, "START GAME");
             }
- 
+            // Draw Setting
             WordToScreen(pixel, TitleNameX, SettingY, "Setting");
-
+            // Draw Quit
             WordToScreen(pixel, TitleNameX, QuitY, "Quit");
- 
+            // Draw Arrow
             Draw(pixel, TitleNameX - 10, ArrowY, Arrow, 8, 8);
-
-            WordToScreen(pixel, 152, 208, "\\2026 Beanie Code");
+            // Copyright & credits to me
+            WordToScreen(pixel, 152, 208, "\\2026 Beanie Tech"); // \\ is used as (c) symbol
         }
 
+    // Stretch the image to 1440x1080
         HDC hdcWindow = GetDC(window_handle);
- 
         StretchBlt(hdcWindow, 0, 0, 1440, 1080, memory_dc, 0, 0, bW, bH, SRCCOPY);
         ReleaseDC(window_handle, hdcWindow);
+    //End of Stretch the image to 1440x1080
         //Sound Section
- 
 
-        //if(header.dwFlags & WHDR_PREPARED){
-          //  waveOutUnprepareHeader(hWaveOut, &header, sizeof(WAVEHDR));
- 
-            //waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
-            //waveOutUnprepareHeader(hWaveOut, &header, sizeof(WAVEHDR));
-        //}
-        //fillBuffSound(&headerA, SbuffA, 880.00f);
-        //fillBuffSound(&headerB, SbuffB, 880.00f);
-
-        if(headerA.dwFlags & WHDR_DONE){
+        // Triple sound buffer setup
+        if(headerA.dwFlags & WHDR_DONE){ // 1st buffer
             float CurrentFreqN = 880.0f;
-            //waveOutUnprepareHeader(hWaveOut, &headerA, sizeof(WAVEHDR));
             fillBuffSound(&headerA, SbuffA, CurrentFreqN);
- 
-            //waveOutPrepareHeader(hWaveOut, &headerA, sizeof(WAVEHDR));
+
             waveOutWrite(hWaveOut, &headerA, sizeof(WAVEHDR));
         }
-        if(headerB.dwFlags & WHDR_DONE){
+        if(headerB.dwFlags & WHDR_DONE){ // 2nd Buffer
             float CurrentFreqN = 880.0f;
-            //waveOutUnprepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
             fillBuffSound(&headerB, SbuffB, CurrentFreqN);
- 
-            //waveOutPrepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
             waveOutWrite(hWaveOut, &headerB, sizeof(WAVEHDR));
         }
-        if(headerC.dwFlags & WHDR_DONE){
+        if(headerC.dwFlags & WHDR_DONE){ // 3rd Buffer
             float CurrentFreqN = 880.0f;
-            //waveOutUnprepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
             fillBuffSound(&headerC, SbuffC, CurrentFreqN);
- 
-            //waveOutPrepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
             waveOutWrite(hWaveOut, &headerC, sizeof(WAVEHDR));
         }
- 
-        //waveOutWrite(hWaveOut, &header, sizeof(WAVEHDR));
-        //if (waveOutPrepareHeader(hWaveOut, &header, sizeof(WAVEHDR)) == MMSYSERR_NOERROR) {
- 
-        //}
- 
-        //Sleep(16.6666666667); //60Frame Cap
-    };
+    }
 
     ChangeDisplaySettingsA(NULL, 0);
 //Resolution of Game = 288x216
 //This uses RGB no AA included
+    // Cleanup
+        // Clean Audio
     CloseHandle(hAudioEvent);
     waveOutUnprepareHeader(hWaveOut, &headerA, sizeof(WAVEHDR));
     waveOutUnprepareHeader(hWaveOut, &headerB, sizeof(WAVEHDR));
     waveOutUnprepareHeader(hWaveOut, &headerC, sizeof(WAVEHDR));
     waveOutClose(hWaveOut);
+    // Clean Image
+    SelectObject(memory_dc, bitmap_handle);
+    DeleteObject(bitmap_handle);
+    DeleteDC(memory_dc);
+
     return 0;
-};
+}
 LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam){
     switch(message){
         case WM_QUIT:
@@ -2361,6 +2186,6 @@ LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM w
         default: { //Message failure to handle
             return DefWindowProc(window_handle, message, wParam, lParam);
         } break;
-    };
+    }
     return 0;
-};
+}
